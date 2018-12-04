@@ -475,3 +475,415 @@ Example of all coverage types:
 - Requirements captured as items in a "product backlog"
 - Developed in (iterative) "sprints"
   - Requirements not allowed to change during a sprint
+
+## System Requirements Capture
+
+`TODO(Derppening): Table of Contents`
+
+### Overview
+
+#### What is a Requirement?
+
+- A **feature** that the system must have or a **constraint** that it must satisfy to be accepted by the client.
+- Statement of _what_ the system will do **without** referring to _how_ it will do it
+- Can range from *high-level abstract statement* of a service or s system constraint to a *detailed mathematical specification*
+
+#### Types of Requirements
+
+- User requirements
+    - Diagrams + Natural Language
+    - Written mainly for clients
+- System requirements
+    - *Structured document* setting out detailed description of the system
+    - Defines what should be implemented
+    - Written for clients and developers
+
+#### Purpose of Requirements Capture
+
+- **Specifies the behavior** of the final software system
+- Involves:
+    - Learning about the problem
+    - Specifying the *required features and constraints*
+
+#### Importance of Requirements Capture
+
+- Reduces errors
+- Reduces cost of software development
+
+#### Difficulties of Requirements Capture
+
+- Requires collaboration of stakeholders with different backgrounds
+- Software engineer needs to bridge the knowledge gap:
+    - Learn about the application domain
+    - Transforming ideas to specifications
+    - Choosing appropriate representations
+
+### System Requirements Capture Activities
+
+- Understand the *application domain* and *identify user needs*
+    - Collect data on system requirements and constraints
+    - Define development effort scope and system design goals
+- Determine the **risks** of developing the system
+    - Economic
+    - Operational
+    - Legal
+    - Technical
+    - Organizational
+- Capture the system requirements
+    - Data Requirements -> Domain Model
+    - Functional Requirements -> User-Case Model
+    - Non-Functional Requirements -> Supplementary text
+- Validate the system requirements
+    - Verify *correctness* and *completeness* of system requirements
+
+#### System Requirements Specification (SRS)
+
+- SRS documents the system requirements
+    - Official statement of what is required of the system
+    - Include user requirements and system requirements
+- **NOT** a design document
+    - States *what* the system should do, not *how* it should do it
+
+#### Ways of Writing a SRS
+
+- Natural Language
+    - Sentences supplemented by diagrams and tables
+- Structured Natural Language
+    - Uses a *restricted language* that follows *fixed standards/template*
+- Graphical Notations
+    - Uses *graphical models* plus text annotations
+- Design Description Languages
+    - Uses a language like *programming languages*
+- Mathematical Specifications
+    - Uses notications based on mathetmatical concepts
+
+#### Capturing Data Requirements: Domain Modeling
+
+- Captures the most important *classes* and their *associations*
+- Classes and associations are found from user requirements
+- Classes can be:
+    - Business objects
+    - Read-world objects and concepts
+    - Events
+
+##### Domain Modeling: Identifying Classes and Associations
+
+- Naturally occurring things or concepts in user requirements:
+    - *Classes* appear as **nouns**
+    - *Associations* appear as **verbs**
+    - Define all terms in *singular, active voice*
+- Identify only *relevant* classes/associations
+    - Relevant = Essential, persistent
+    - Leads to stable system
+- Often has more than one decomposition
+
+##### Domain Modeling: Identifying Attributes
+
+- Usually correspond to *nouns* followed by *possessive phrases*
+    - **password** of student
+- Adjectives represents enumerated values
+- Identify attributes that **directly** relate to application domain
+
+##### Domain Modeling: Evaluating Classes
+
+- Classes should:
+    - Represent *relevant and persistent* data
+    - Be specific and well-defined
+- Classes should not:
+    - Describe operations/actions
+    - Describe implementation constructs
+
+##### Domain Modeling: Evaluating Associations
+
+- Associations should:
+    - Describe a structual property
+    - Be composed of as simple associations (ternary -> binary)
+- Associations should not:
+    - Describe trasient events
+    - Contain derived associations
+    - Describe implementation constructs
+
+##### Domain Modeling: Evaluating Attributes
+
+- Attributes should:
+    - Be closely related to the class
+    - Be dependent on the class
+- Attributes should not:
+    - Include object identifiers
+
+##### Domain Modeling: Detail
+
+- Class
+    - Specifies attributes
+    - Implies `get()` and `set()` operations
+- Attribute
+    - Specifies name, type, multiplicity
+- Association
+    - Specifies name, role names, multiplicity, association classes
+
+#### Capture Functional Requirements: Use-Case Modeling
+
+- Captures system behavior *from user's point of view*
+- Developed incrementally with domain model
+- Use cases describe all required functionality
+
+##### Use-Case Modeling: Actors
+
+- Represents something *outside* the system that *directly interacts* with it
+    - Can be a person or another system
+    - Provides input or receives output from the system
+- Usually the source for discovering use cases
+- Stereotype of a UML class
+    - Actor is a classifier
+    - User or system is an instance
+
+##### Use-Case Modeling: Identifying Actors
+
+- Possible to have a *domain model class* and an *actor* representing the **same thing**
+- I/O devices are **NEVER** actors
+
+##### Use-Case Modeling: Use Case
+
+- A *specific way of using the system* by performing some part of its functionality
+- Describes interaction between actor and system
+    - Considered from the actor's viewpoint
+- Complete sequence of events/actions
+- **Always** initiated by an actor
+- Initially, only consider normal sequence
+
+##### Use-Case Modeling: Scenario
+
+- Concrete, focused, informal description of a *single use* of the system from the viewpoint of a *single actor*
+    - Attempt to carry out a use case
+- Approaches to constructing use-case models:
+    - Top-Down: `Use Cases -- Refinement --> Scenarios`
+    - Bottom-Up: `Scenarios -- Abstraction --> Use Cases`
+- Stereotype of a UML class
+    - Use case is classifier
+    - Scenario is instnace
+
+##### Use-Case Modeling: Identifying Use Cases and Scenarios
+
+- State a use case name...
+    - From perspective of actor
+    - As present-tense, verb-phrase
+    - In active voice
+- Provide...
+    - Description of purpose
+    - Outline of functionality
+- Describe...
+    - Using application domain terms
+
+##### Use-Case Modeling: What is a Good Use Case?
+
+- Typically represents major piece of functionality from beginning to end
+- Must deliver something of value
+- Better to have longer and more extensive use cases
+
+##### Use-Case Detailed Specification
+
+- Use case name
+- Brief description
+- Participating actors
+- Preconditions
+    - State of system/actors before use case can be performed
+- Flow of events
+    - Concise sequence of actions needed to accomplish a use case
+    - General format: `The <something> <actions>.`
+    - Language Constructs:
+        - `if <boolean-expression>`
+        - `for <iteration-expression>`
+        - `while <boolean-expression>`
+    - Extension Points: Named place to define additional behavior
+        - Primarily used to define alternative flows
+- Postconditions
+    - State of system at the end of use case
+- Alternative flows
+    - Optional actions (*addition to* normal flow)
+    - Variant actions (*replacing* normal flow)
+    - Exceptional actions (*handling abnormal situations* in normal flow)
+    - Should be numbered, and uniquely named
+    - General declarations:
+        - `At {extension point} <if/while> <condition/event>...`
+        - `At any point between {extension point} and {extension point}...`
+        - `At any time in the flow of events...`
+    - Exit point declarations
+        - Optional: Flow resumes at original extension point
+        - Variant: Flow resumes at another extension point
+        - Exceptional: Flow resumes, or use case ends
+- Subflow
+    - Segment of behavior with clear purpose and is "atomic"
+    - Structures use-case description to improve readability
+    - Should be named `S1, S2, ..., Sn`
+    - Usage: `Perform subflow <subflow>`
+- Special nonfunctional requirements
+
+##### Use-Case Detail: How Much Detail?
+
+- Until all ambiguities are resolved
+- As much as it takes to satisfy all stakeholders
+
+##### Use-Case Interaction & Decomposition
+
+- Use cases only interact via the system
+- Use cases should be independent of each other
+
+#### Nonfunctional Requirements
+
+- Constraint on use cases or system
+- Includes:
+    - Design Quality
+    - Documentation
+    - Hardware
+    - Implementation
+    - Interface
+    - Management
+    - Performance
+    - Physical Environment
+    - Security
+
+##### Specifying Nonfunctional Requirements
+
+- Specified as supplementary requirements
+- Administration Use Cases: Solely deal with non-functional requirements
+
+#### System Requirements Validation
+
+- Requirements should be validated continously
+- Requirements should be:
+    - Complete: Describe all aspects of the system
+    - Consistent: No contradiction
+    - Clear: Defines a system which can only be interpreted in one way
+    - Correct: Accurate representation of all system aspects
+    - Realistic: Able to implement within constraints
+- Validated by acceptance tests
+
+## Implementation
+
+`TODO(Derppening): Table of Contents`
+
+### Implementation Overview
+
+- Transform a design into *executable code*
+- Implements the system in terms of:
+    - Module: Part of system which packages implementations and provides interfaces
+    - Subsystem: Organizes modules into manageable pieces
+
+#### Implementation Activities
+
+- Generate source code
+    - Choose and code algorithms
+- Assign classes to modules
+    - Dependent on langauges
+- Integrate modules and subsystems
+    - Compile + Link into executables
+    - Need VCS
+    - Need integration
+- Distribute executable modules
+
+### Producing Solid Code *(because liquid code is not good)*
+
+#### Defensive Programming
+
+- First Rule: ~~You do not talk about defensive programming~~
+- First Rule: Protect yourself at all times
+    - Check values of all data from external sources
+    - Check values of all input parameters
+    - Decide how to handle bad inputs
+
+##### Defensive Programming: Barricade Your Program
+
+- Convert all possible inputs into trusted data via validation classes
+
+##### Assertions
+
+- Use them
+    - Preconditions: Assertion prior to statement
+    - Postconditions: Assertion after statement
+- Deduce them by:
+    - Forward Reasoning: From preconditions, deduce postconditions
+        - More intuitive, but may rapidly increase complexity
+    - Backward Reasoning: From postconditions, deduce preconditions
+        - More helpful
+- Useful checks
+    - `lowerBound <= value < upperBound`
+    - `File/Stream.isOpen()`
+    - Preservation of `const`/`final`-ness
+    - `ptr != nullptr`
+    - `array.size >= size`
+    - `table.all { value.isReal() }`
+    - `container.isEmpty()` or `container.isFull()`
+- Guidelines
+    - Use assertions to...
+        - Document and verify preconditions/postconditions
+        - Verify certain conditions never occur
+
+#### Code Review
+
+- Offline version of pair-programming
+- Review code written by other devs
+- Collbrate and not blame
+
+##### Motivation
+
+- Catch bugs and design flaws early
+- Let more than one person see the code
+- Forces code authors to review their decisions
+- Allows junior devs to get early hands-on experience
+- Hold everyone accountable
+- Assessment of performance
+
+##### Process
+
+- What is reviewed?
+    - Specifications
+    - Modules
+    - Completed code
+- Who participates?
+    - At least one other dev
+- Where?
+    - Formal, in person
+    - Informal, email/chat
+
+#### Refactoring
+
+- Improving internal structure without altering behavior
+- Keep code to be:
+    - Able to execute its functionality
+    - Able for change
+    - Able to communicate its intentions
+
+##### Low-Level Refactoring
+
+- Names
+    - Renaming operations/variables
+    - Naming/Extracting "magic" constants
+- Procedures
+    - Extracting code into a method
+    - Extracting common functionality into a module/operation
+    - Inlining procedures
+    - Changing operation signatures
+- Reodering
+    - Splitting operations into several
+    - Putting statements together
+
+##### High-Level Refactoring
+
+- Opt for safer language idioms
+- Clarifying an unclear statement
+- Optimizations
+- Refactor design patterns
+- *Is harder, but more important*
+
+##### Refactoring Plan
+
+1. Assume you have time
+2. Write unit tests to ensure behavior is kept
+3. Refactor the code
+4. Add new features
+
+##### "I have no time!"
+
+- Refactoring is expensive time-wise and cost-wise
+- But has long-lasting benefits
+- Do it continually
