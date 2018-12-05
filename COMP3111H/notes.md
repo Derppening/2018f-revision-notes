@@ -887,3 +887,469 @@ Example of all coverage types:
 - Refactoring is expensive time-wise and cost-wise
 - But has long-lasting benefits
 - Do it continually
+
+## Testing
+
+### Purpose
+
+- Validation: built the right product - Acceptance tests
+- Verification: built the product right - unit, integration, system tests
+
+### Reality
+
+- Cannot prove absense of errors
+- Cannot completely test a nontrivial system
+- is destructive: try to break software and find bugs
+
+### Plan Tests
+
+- Exhaustive runs are not feasible
+- Goal: design such that tests have highest likelihood to find defects with minimum time and effort
+
+1. Testing strategy: what tests, how to test, how much coverage
+2. Testing schedule
+3. Reource estimate
+
+- Choose test suite (input set)
+
+#### Input Space Partitioning
+
+- Equivalent input sets give same program behaviour
+
+##### Naive: Execution Equivalence
+
+- In `abs(x)`, all `x<0` are execution equivalent because the program takes the same sequence of steps for any `x<0`
+- Does not reveal error if the assumptions are buggy, e.g. `{-3,3}` on `... if (x < -2) return -x`
+
+##### Better: Revealing Subdomains
+
+- Define "same behaviour on two inputs" if their truth values agree (both correct or both wrong)
+- A Subdomain is *revealing for an error E* if
+    - All elements of this subdomain have same behaviour
+    - If error E occurs, the test with this subdomain reveals it
+    - e.g. `{-3,-2, -1}` which all returns `-x`, reveals bug of `abs (x) ... if (x < -2) return -x`
+- Heuristics
+    - Partition based on program-dependent information (actual code) and program-independent information (requirements, algorithms, data structures)
+    - Good heuristic has few domains and high probability to reveal error E
+    - Combine multiple heuristics
+
+### Design Tests
+
+- A Test case is *one way* of testing the system
+
+#### Steps
+
+1. Choose input data, software configuration
+2. Define expected output
+3. Run against input and record
+4. Compare against expected
+
+#### Types of Test Cases
+
+##### White Box: "Testing-in-the-small"
+
+- Use source code (knowledge of internal workings)
+- Verify component logic with data and control structures
+- Statement Testing: Executing every statement is insufficient to discover errors because statements could skip buggy code/inputs (e.g. `i=0; x = y/i` but `i++` is optional) and could involve global states
+
+1. Basis Path Testing: Execute independent paths at least once
+    1. Draw graph of program statements, then flow graph of nodes (group statements with no branching as a node)
+    2. Calculate *Cyclomatic Complexity* `V(G)` (by counting no. of regions including outermost)
+    3. Choose a *basis set of n linearly independent paths* with `n <= V(G)`
+        - Independent Path: Path that traverses at least one new statement. Identify with statement number
+        - Basis Set: Collect enough independet paths to cover the code. Non-unique set
+    4. Write test cases that force execution of each path in the basis set
+        - Derive test cases from the basis set guarantees that every statement is executed once; is the minimum number of use cases required
+        - So it does not test all possible combinations of paths
+        - Apply to all components if possible, critical components always
+        - For compound logical tests, perform `no. of boolean operators + 1` tests (e.g. 1 `&&` has 2 cases)
+
+
+2. Condition Testing: Execute true and false value of every simple logical conditon in the component
+    - Types
+        1. Simple condition: `rel-op = {<, <=, ==, !=, >=, >}` and their `NOT`
+        2. Compound condition: `AND`, `OR`
+        3. Relational expression: simple condition on arithmetic expressions (E1 = 1 + 1 == 3 = E2)
+        4. Boolean expression: `NOT` of expressions
+
+    1. Branch Testing: (`C = A AND B` then test for all cases `{C, A, B}` equals T/F)
+        - Handled in Basis Path Testing
+    2. Domain Testing: `E1 rel-op E2` where `E1`, `E2` are numbers
+        - Test `E1 > E2`, `E1 == E2`, `E1 < E2`
+        - If difference `|E1 - E2|` is small, more likely to detect errors (boundary cases)
+
+
+3. Loop Testing: Execute loops at boundaries and normal values
+    1. Simple Loops
+        1. 0, 1, 2 passes
+        2. `m < n` passes
+        3. `{n-1, n, n+1}` passes
+    2. Nested Loops (tests grow geometrically with levels)
+        1. Fixing Outer loops at inital minimum values
+        2. Perform Simple Loop test in innermost loop
+        3. Work outward on next (second, ...) innermost loop, until outermost loop is tested
+    3. Concatenated Loops (same level)
+        1. If loops are independent, do separate Simple Loop tests
+        2. If not, fix first loop as the outer loop and perform Nested Loop tests
+    4. Unstructured Loops (`goto`), Refactor
+
+    Loop tests tend to reveal most errors with minimal effort and test overlap
+
+4. Data Flow Testing: Check variables hold values as expected
+    - A Variable (X) Definition (S), Uses (S') chain has the same `X` value from statement number `S` to `S'`
+    - DU Chains `[(X, S1, S1'), (X, S2, S2'), ...]` parition the program into parts where `X` is not changed (redefined)
+    - Strategy: For each variable `X`, perform test along the path `S -> S'` so that every DU chain is covered once. This can be combined with Basis Path testing
+
+##### Black Box: "Testing-in-the-large"
+
+- Require component usage only (knowledge of supposed functionality, access to executable code)
+- Verify component functionality with inputs and outputs
+- Attempts to find
+    - functions incorrect or missing
+    - interface incompatibility
+    - data structure or database access errors
+    - performance errors
+    - initialisation and termination errors
+- Need to report the presense/absence of a *class* of errors, so we test a range of input/output values, not a singular value
+    - Equivalence Partitioning: creates subdomains (again)
+        - Common partition heuristic: `{valid, invalid}` (normal values are in `valid`)
+
+            | Input | Subdomains | Illustration |
+            | -------- | -------- | -------- |
+            | Range     |  1 valid, 2 invalid smaller and larger    | `a[..b..]c`     |
+            | Specific value     |  1 exact, 2 invalid smaller and larger    | `a[b]c`     |
+            | Set of values     |  1 member of set, 1 non-member of set    | `a in S`, `b not in S`     |
+            | Boolean     |  1 boolean, 1 non-boolean    | `Boolean a `, `NonBoolean b`     |
+
+1. Boundary Testing
+    - More erros occur at the boundaries of subdomains than in the center, due to off-by-one / empty container / NPE / overflow / cannot handle object aliasing
+    - Select small boundary subdomains of main subdomains, they have high probability of revealing common errors
+    - Test Value Selection Heuristics
+
+        | Input | Test Values / Subdomains | Illustration |
+        | -------- | -------- | -------- |
+        | Range     |  just above and below both bounds    | `a[bc......de]f`     |
+        | Discrete values     |  just above and below both min and max value    | `a[bc _ _ _ de]f`     |
+        | Set of values     |  all members in the set (if possible), 1 non-member of set    | `all a in S`, `b not in S`     |
+        | Boolean     |  1 true, 1 false, 1 non-boolean    | `Boolean a `, `NonBoolean b`     |
+        | Any (e.g. Table)     |  min and max values (e.g. sizes: 1 row, MAX rows)    |      |
+        | Data Structure     |  just above and below both min and max value if defined (e.g. array index -1, 0, 1, n-1, n, n+1)    |      |
+
+    - Test cases and values
+
+        | Test Type | Test Case | Expected | Test Value |
+        | --------- | --------- | -------- | ---------- |
+        | **Boundary Values**     | Minimum Range     | Valid Student ID (Record existent)    | 1000000         |
+        | Boundary Values     | Minimum Range     | Valid Student ID (Record existent)    | 1000001         |
+        | Boundary Values     | Minimum Range     | Invalid Student ID     | 999999         |
+        | Boundary Values     | Maximum Range     | Valid Student ID (Record existent)    | 9999999         |
+        | Boundary Values     | Maximum Range     | Valid Student ID (Record existent)    | 9999998         |
+        | Boundary Values     | Maximum Range     | Invalid Student ID     | 10000000         |
+        | **Typical Values**     | Mid-Range     | Valid Student ID (Record existent)    | 5000000         |
+        | Typical Values     | Mid-Range     | Valid Student ID (Record non-existent)    | 5000001         |
+        | Typical Values     | Below lower Range     | Invalid Student ID     | 500000         |
+        | Typical Values     | Above lower Range     | Invalid Student ID     | 50000000         |
+        | **Other Values**     | Nonnumeric     | Invalid Student ID     | leet1337         |
+
+        Format
+        - Test Case #
+        - Setup (Ensure record existent)
+        - Test Value
+        - Verification
+
+
+2. Thread Testing
+    - For events that trigger system actions
+    - After unit testing and integration to subsystems
+    - Strategy: Identify and execute (each if possible) most common executed threads (as use cases) as it is the *basic flow of events*
+    - Types
+        - Single thread
+        - Multiple thread: branches out
+        - Multi-input thread: branches in
+
+
+3. State-based Testing
+    - For programs with too many states, e.g. MS Paint
+    - Use **State Machine Diagram** for a class
+    - Derive a *representative set of stimuli (events)* for each *transition*
+    - Strategy: Put class in desired initial state, then apply stimuli. Check attributes or links of class again expected end states
+
+
+##### Regression: "Re-testing"
+
+- Uses White and Black Box test cases selectively
+- Verify no new defects on making new changes (Old code still works)
+
+When a bug is found
+
+1. Reproduce bug
+2. Record input for the reproduction
+3. Record the supposed correct output
+4. Log everything into test suite
+5. Fix bug and verify
+
+- This populates (expands) the test suite with good tests
+- Prevent from reintroducing the bug: once it happened once, could happen again
+
+### Implement Tests
+
+- Goal: Automate test procedures as much as possible
+- Write *test components*: records actions, parametrises inputs
+- Use spreadsheets/database application to store input and output of tests
+
+### Perform Tests
+
+Overview
+
+![](https://i.imgur.com/loHQDWW.png)
+
+#### Testing Strategy
+
+- Specifies which testing technique(s) *(White Box, Black Box)* are appropriate at which point of time
+- Integrates test cases into well-planned series of steps
+    - Specifies steps to test a component
+    - Specifies when those steps will be undertaken
+    - Specifies how much resources (effort, time) will be required
+- Test Planning is difficult due to debugging time uncertainty
+    - A testing strategy needs to balance betwwen *flexibility and creativity* vs *planning and management*
+- Testing occurs often when deadline pressure is most severe
+    - Make progress measureable
+    - Identify problems early on
+
+![](https://i.imgur.com/ibz4HCu.png)
+
+
+##### Unit Testing
+
+##### Integration Testing
+
+##### System Testing
+
+##### Acceptance Testing
+
+
+
+## System Analysis and Design
+
+`TODO(Derppening): ToC`
+
+### System Analysis and Design Overview
+
+#### The Purpose and Importance of System Analysis and Design
+
+- System is gradually structured into basic parts with well-defined relationships
+    1. Build the system skeleton
+        - Produce a stable basis
+        - Skeleton provided by software architecture
+    2. Grow the system
+        - Produce a finer system structure
+        - Accomplished by analysis and design workflows
+- Use-case model is not sufficiently formal
+    - Requires complete specification to remove *ambiguities* and *redundancies*
+    - Need precise requirements in developer's language
+    - Need structure requirements for *understanding* and *maintenance*
+
+#### Realizing Design Goals
+
+- Need to decide how to realize design goals
+- Need to prioritize design goals, develop trade-offs
+
+#### Dealing with the Implementation Environment
+
+- Encapsulate and isolate implementation environment
+    - Use bridge classes
+
+### System Analysis and Design Activities
+
+#### Architectural Analysis and Design
+
+- Focuses on
+    - Understanding the organization of a system
+    - Designing the overall structure of a system
+- Identifies subsystems based on *main structural components* and *relationships between them*
+    - Encapsulates its contents, providing services via interfaces
+    - Provides information hiding
+- Nonfunctional requirements dependent on system architecture
+
+##### Layers and Paritions
+
+- Subsystem Layers
+    1. Closed layered: Each layer can only depend on the layer below it
+    2. Open layered: Eacg layer can depend on any layers below it
+
+##### Architecture Decisions
+
+- Based on nonfunctional requirements
+    - Performance: Use small number of subsystems to localize critical functions
+    - Security: Use a layered architecture with critical assets in innermost layer
+    - Safety
+    - Availability: Include redundant subsystems to allow maintainence without stopping the system
+    - Maintainabilty
+
+##### Architectural Patterns
+
+- Specifies how to *organize and connect* a set of software components
+- Includes specification of
+    - System decomposition
+    - Global control flow
+    - Error handling policies
+    - Inter-module/component communication protocols
+- Types of Patterns
+    - Multi-Layer: Each layer only communicates with the layers below it
+    - Repository: Centralize management of data
+    - Client-Server: Separate and distribute system functionality
+    - Broker: Distribute system aspects to different nodes transparently
+    - Transaction Processing: Direct input to specialized subsystems
+    - Pipe-and-Filter: Provides flexibility, modifiability and reusability of subsystems
+    - MVC: Separate UI layer from other parts
+
+#### Use-case Analysis
+
+##### Analysis Classes
+
+- Abstraction of classes in the final system implementation
+- Representation is conceptual
+    - Conceptual attribute types
+    - Behavior defined by responsibilities
+    - Conceptual relationships
+- Can be:
+    - Boundary: Models interaction between system and actors
+        - Represents abstraction of UI or devices
+        - Identified by primary UI window or communication interface
+    - Entity: Models long-living, persistent information
+        - Represents concepts e.g. individual, real-life object/event
+        - Identified by domain model classes
+    - Control: Models coordination, sequencing, transactions, control behavior
+        - Represents control or business logic
+        - Generally tied to each actor/use-case pair
+- Best Practices
+    - Actors can *only* interact with boundary objects
+    - [Initially] Boundary objects can interact *only* with control object and actors
+    - [Initially] Entity objects can interact *only* with control objects
+    - Control objects can interact with any other type of object
+- Use-Case Partitioning: Dividing all use cases into a collaboration of analysis classes
+
+#### Class Design
+
+- Class with sufficiently completed specifications such that it can be implemented
+- Need to implement *problem domain classes* using *solution domain classes*
+    - Boundary Class: Determined by UI technologies
+    - Entity Class: Determined by data management technologies
+    - Control Class: Determined by issues related to distribution, performance, transactions
+- Activities
+    - Select reusable components
+        - Class libraries and design patterns
+    - Complete the specification
+        - Add attributes, associations, operations, types, visibilities, constraints
+    - Restructure the design model
+        - Add associations, apply inheritance
+    - Optimize the design model
+        - Revise access paths, collapse classes, cache/delay computations
+- Cohesion and Coupling
+    - Prefer **High Cohesion**: One class does a specific thing
+    - Prefer **Loose Coupling**: One class has minimal dependencies with others
+- SOLID Design Principle
+    - Single Responsibility Principle
+    - Open-Closed Principle
+        - Open for extension, closed for modification
+    - Liskov Substitution Principle
+        - Where a superclass can be used, all its subclasses can be used as well
+    - Interface Segregation Principle
+        - Do not force clients to depend upon interfaces they don't use
+    - Dependency Inversion Principle
+        - High-level modules and Low-level modules should depend on abstractions
+        - Details should depend on abstractions
+
+#### Object Behavior Analysis: State Machine Diagrams
+
+- Describes behavior inside an object
+- Directed graph, where:
+    - Vertices: States
+    - Edges: Events causing state changes (Transition)
+- States
+    - Time during the object life time
+    - Satisfies a condition, performs an action, waits for an event
+    - Has duration
+    - Characterized by:
+        - Value of one or more attributes
+        - Link to another object
+- Transition
+    - Change of state
+    - Takes zero-time and cannot be interrupted
+    - Can optionally include:
+        - Event Trigger
+        - Guard Condition
+        - Effect List
+- Event
+    - Something that happens at an instantaneous time point
+    - Can include:
+        - Call Event: Receipt of a *synchronous call* from an object (callback?)
+        - Change Event: Specified boolean condition becoming true
+        - Time Event: When a time point is reached
+        - Signal Event: Receipt of an *async communication* from an object (listener?)
+- Event/Transition Mechanics
+    - Events are processed one at a time
+    - Only one transition within a state machine diagram may fire
+    - Transition can be:
+        - Automatic: When activity of state completes
+        - Non-automatic: Caused by event
+- Actions & Activities
+    - Action: Instantaneous and cannot be interrupted
+        - Processes transitions between states or into/out of a state
+    - Activity: Takes time to complete and can be interrupted
+        - Processing that occurs while in a state
+    - Forms of State Behavior
+        - `(no behavior)`: Wait until event occurs, exiting the state
+        - `[event-trigger] [guard-condition] / [effect-list]`: Perform `effect-list` if `event-trigger` occurs and `guard-conditon` is true
+        - `do / activity`: Perform `activity` while state is active
+        - `entry / activity`: Perform `activity` when state is entered
+        - `exit / activity`: Perform `activity` when state is exited
+- Composite State Machine Diagram
+    - Sequential: Object is in exactly *one state* in one of the *nested state machine diagrams*
+        - Used to abstract/generalize states
+    - Concurrent: Object is in exactly *one state* in *each of the regions* of the state machine diagrams
+        - Used to show multi-threading behavior
+    - Transitions
+        - Transition to boundary: Transition into initial state
+            - `entry / activity` is performed for all regions entered
+        - Transition from boundary: Transition from composite state
+            - `exit / activity` is performed for all regions exited
+        - Transitions can cross directly from/to composite state region
+        - Transitions may have *multiple source/target states*
+- When to use State machine Diagram
+    - When describing behavior of object across several use cases
+    - Used for classes with *significant* dynamic behavior
+
+#### Design Patterns
+
+- Reusable solution to a commonly occurring problem
+- Template for solving certain problems
+- Common Design Principles
+    - Separate mutable aspects from immutable aspects
+    - Program to an interface, not an implementation
+    - Favor composition (*has-a*) over inheritance (*is-a*)
+- Common Design Patterns
+    - Strategy Pattern
+        - `Client` class contains a reference to the `Strategy` interface
+        - Multiple subclasses implements `Strategy`, forming concrete implementations
+    - Observer Pattern
+        - Defines one-to-many dependency
+        - When `subject` obejct changes state, all registered dependencies are notified
+    - Mediator Pattern
+        - All componenets interact with a mediator
+        - Commonly used to coordinate GUI components
+    - Proxy Pattern
+        - Defers object creation and initialization until usage
+    - Bridge Pattern
+        - Separate abstraction and implementation using a bridge association
+    - Singleton Pattern
+        - Classes which can only have one instance
+    - Factory Pattern
+        - Object creation without specifying the exact class
+
+#### Anti Patterns
+
+- Spaghetti Code: Code with convoluted structure
+    - Difficult to maintain or modify
+- God Class: Class that has too many attributes/operations
+    - Violates cohesion
