@@ -890,6 +890,29 @@ Example of all coverage types:
 
 ## Testing
 
+### Table of Contents
+
+- [Purpose](#purpose)
+- [Reality](#reality)
+- [Plan Tests](#plan-tests)
+  * [Input Space Partitioning](#input-space-partitioning)
+    + [Naive: Execution Equivalence](#naive--execution-equivalence)
+    + [Better: Revealing Subdomains](#better--revealing-subdomains)
+- [Design Tests](#design-tests)
+  * [Steps](#steps)
+  * [Types of Test Cases](#types-of-test-cases)
+    + [White Box: "Testing-in-the-small"](#white-box---testing-in-the-small-)
+    + [Black Box: "Testing-in-the-large"](#black-box---testing-in-the-large-)
+    + [Regression: "Re-testing"](#regression---re-testing-)
+- [Implement Tests](#implement-tests)
+- [Perform Tests](#perform-tests)
+  * [Testing Strategy](#testing-strategy)
+    + [Unit Testing](#unit-testing)
+    + [Integration Testing](#integration-testing)
+    + [System Testing](#system-testing)
+    + [Acceptance Testing](#acceptance-testing)
+- [Evaluate Tests](#evaluate-tests)
+
 ### Purpose
 
 - Validation: built the right product - Acceptance tests
@@ -911,6 +934,7 @@ Example of all coverage types:
 3. Reource estimate
 
 - Choose test suite (input set)
+- Test-stopping criteria
 
 #### Input Space Partitioning
 
@@ -954,7 +978,7 @@ Example of all coverage types:
 
 1. Basis Path Testing: Execute independent paths at least once
     1. Draw graph of program statements, then flow graph of nodes (group statements with no branching as a node)
-    2. Calculate *Cyclomatic Complexity* `V(G)` (by counting no. of regions including outermost)
+    2. Calculate **Cyclomatic Complexity** `V(G)` (by counting no. of regions including outermost)
     3. Choose a *basis set of n linearly independent paths* with `n <= V(G)`
         - Independent Path: Path that traverses at least one new statement. Identify with statement number
         - Basis Set: Collect enough independet paths to cover the code. Non-unique set
@@ -997,7 +1021,7 @@ Example of all coverage types:
 
 4. Data Flow Testing: Check variables hold values as expected
     - A Variable (X) Definition (S), Uses (S') chain has the same `X` value from statement number `S` to `S'`
-    - DU Chains `[(X, S1, S1'), (X, S2, S2'), ...]` parition the program into parts where `X` is not changed (redefined)
+    - DU Chains `[(X, S1, S1'), (X, S2, S2'), ...]` partition the program into parts where `X` is not changed (redefined)
     - Strategy: For each variable `X`, perform test along the path `S -> S'` so that every DU chain is covered once. This can be combined with Basis Path testing
 
 ##### Black Box: "Testing-in-the-large"
@@ -1099,9 +1123,9 @@ When a bug is found
 
 ### Perform Tests
 
-Overview
+#### Overview
 
-![](https://i.imgur.com/loHQDWW.png)
+![](img/15-perform-tests.png)
 
 #### Testing Strategy
 
@@ -1116,18 +1140,143 @@ Overview
     - Make progress measureable
     - Identify problems early on
 
-![](https://i.imgur.com/ibz4HCu.png)
-
+![](img/15-testing-strategy.png)
 
 ##### Unit Testing
 
+- Use White Box (*Main emphasis*) and Black Box
+- Verify correct functions of component / subsystem
+- Done by developers
+
+Components developed for each unit test:
+
+- Drivers: takes a test case *(interface, independent paths, boundary conditon, local data structure, error-handling paths)*, calls a component, outputs results
+- Stubs: called by the component under test
+
+In the object-oriented setting:
+
+- What to test: All states of a class (the object). Use *State-based testing*
+- Inheritance and Polymorphism: All subclass methods (overridden or not) must be tested due to dynamic binding and sustainability
+- Encapsulation: Need method to report all internal states
+    - e.g. `Stack::peek` for `new empty stack -> push -> pop -> peek` reports empty stack
+
 ##### Integration Testing
+
+- Use White Box and Black Box
+- Verify correct interactions between component / subsystem
+- Done by developers / independent test group (integration/system tester)
+
+- Interaction errors *(interface misuse, timing errors)* cannot be uncovered by unit testing
+- Approach (avoid Big Bang):
+    1. Incremental construction
+    2. Incremental builds
+    3. Regression
+
+Strategies:
+
+1. Top Down
+
+    1. Test subsystem with placeholder stubs
+    2. Replace stubs breadth/depth-first
+    3. Regression-test subset of previous tests
+
+    - Pros: Interface errors early detection. Can demonstrate complete system functionality earlier.
+    - Cons: Low-level processes are postponed until late testing. Effort to write and test stubs.
+
+2. Bottom Up
+
+    1. Group subsystems into builds, integrate
+    2. Replace drivers one at a time in depth-first manner
+
+    - Pros: Interaction errors early detection. Easier test case design (eliminates need for stubs).
+    - Cons: User interface testings are postponed.
+
+3. Sandwich
+
+    - Test top-level subsystems with stubs
+    - Group lower-level subsystems into builds. Test them with drivers
+
+    - Pros: Allows for parallel testing. Significantly shorten total testing time.
+    - Cons: Require maintaining numerous drivers and stubs.
+
+Critical subsystems:
+
+- Characteristics
+    - Has high risk
+    - Addresses multiple requirements (implements multiple use cases)
+    - Has high level of control
+    - Are complex, error-prone, high cyclomatic complexity
+    - requried specific performance
+- Requires *Regression Testing*
+
 
 ##### System Testing
 
+- Use Black Box
+- Verify correct functions of the system as a whole (properly integrated)
+- Done by independent test group (integration/system tester)
+
+Types:
+- Funcational Testing: verify all user functions working as specified in *system requirements specification*
+- **Performance Testing**: verify having met design goals (nonfunctional requirements)
+    - Stress: when confronted with many simultaneous requests (how much can it handle? Fails softly or collapses?)
+    - Volume: can handle data (in large amounts), algorithm (of high complexity), disk (high fragmentation)
+    - Security: access protection mechanism works (make penetration more costly than value of entry)
+    - Timing: meets timing constraints (for real-time and embedded systems)
+    - Recovery: can recover when forced to fail in various ways (like in database)
+
+
+- **Pilot Testing**: a group of end users verifies common functionality
+    - Alpha test: in controlled environment at developer's site, developers can observe users
+    - Beta test: in real environment at client's site. Client reports bugs to developer from regular usage patterns
+
+
+- **Acceptance Testing**: clilent/user verifies usability, validates functional *and* nonfunctional requirements against system requirements specification*
+    - *Demonstrates/Show* to client that functions and constraints of the system are fully operational
+
+    Parts
+    - Functional validity
+    - Interface validity: desired input-output functions. follows required design standard.
+    - Information content: storing correct data in required constraints/formats
+    - Performance
+
+    Deriving
+    1. Restate written requirements *concisely, precisely, testably* by grouping related requirements and removing untestable requirements
+    2. Add additional requirements from user feedback by referencing
+        - use cases: for functional and interface requirements
+        - domain model: for information content requirements
+        - nonfunctonal for requirements: performance requirements
+
+    3. Construct an **evaluation scenario** to show having met the requirement for each requirement
+        - Devise test case for each requirement (so that they are operational)
+
+- Installation Testing: clilent/user verifies usability, validates unctional *and* nonfunctional requirements in actual usage
+
+
 ##### Acceptance Testing
 
+- Use Black Box
+- Validates software against requirements
+- Done by client / user
+- Refer to **System Testing > Acceptance Testing**
 
+### Evaluate Tests
+
+- *Test engineer* compares results against goals in test plan
+- Prepares metrics to determine quality of software
+- Stop testing by criteria, *decided during Test Planning*
+    - Testing completeness (coverage of completed test cases and tested code)
+    - Reliability (testing error rate)
+        - Against expected failure rate (based on previous projects)
+        - Plot expected vs actual (current) failure rate
+- Possible outcomes
+    - Perform additional tests (for more defects)
+    - Relax test criteria
+    - Deliver acceptance parts of system (revise and test unaccepted parts)
+- Testing under pressure
+    - Test Functionality (system capabilities) > Test components
+    - Test old capabilities > Test new capabilities
+    - Test typical cases > Test boundary cases
 
 ## System Analysis and Design
 
@@ -1175,7 +1324,7 @@ Overview
 
 - Subsystem Layers
     1. Closed layered: Each layer can only depend on the layer below it
-    2. Open layered: Eacg layer can depend on any layers below it
+    2. Open layered: Each layer can depend on any layers below it
 
 ##### Architecture Decisions
 
@@ -1353,3 +1502,283 @@ Overview
     - Difficult to maintain or modify
 - God Class: Class that has too many attributes/operations
     - Violates cohesion
+
+## Software Quality Assurance
+
+`TODO(Derppening): ToC`
+
+### Purpose and Importance
+
+- Consists of procedures/techniques/tools applied by professionals
+- Ensures that prodcut meets/exceeds pre-specified standards during its development cycle
+
+```
+Quality Assurance      Defines organizational standards
+  requires ↓
+Quality Planning       Tailors standards to specific product
+  requires ↓
+Quality Control        Ensures standards are followed
+```
+
+- Allows defects to be identified and fixed early in the development process
+
+### Achieving Software Quality
+
+![](img/20-sqa.png)
+
+1. Product must have set of quality attributes to meet
+2. Quality attributes should be measurable
+    - Determines how well the product conforms to design goals
+3. Keep track of the quality attributes
+    - Allows assessment of achieving design goals over time
+4. Use the information to improve the quality of future products
+    - Allows feedback in development process
+
+#### SQA Activities
+
+##### Standards
+
+- Norm/Requirement establishing uniform criteria, methods, processes, practices
+    1. Product standards: Characteristics that all product artifacts should exhibit
+    2. Process standards: How the software process should be conducted
+- Importance
+    1. Documents the best/appropriate practices
+    2. Provide a framework to implement quality control
+    3. Ensures the continuity of project work
+- Standards Evaluation: Deciding the stanards to...
+    - Ignore?
+    - Used as is?
+    - Modified?
+    - Created?
+
+##### Metrics
+
+Type of measurements related to a software product, process, or artifact.
+
+- Importance
+    1. Used to control the development process
+    2. Used to predict product quality
+- Objective way to measure quality attributes
+
+#### Achieving Product Quality
+
+- Design Goals: External quality attributes we want to have
+    - Predicted using internal quality attributes
+- Metrics for System Design
+    - Key Goal: Maintainability
+    1. Strctural fan-in/fan-out
+        - Fan-in: Number of calls to a component from others
+            - High fan-in: High coupling
+        - Fan-out: Number of components called by component
+            - High fan-out: Caller has high complexity
+    2. Informational fan-in/fan-out
+        - Considers number of parameters and access to shared data
+        - `complexity = component-length * (fan-in * fan-out)^2`
+        - Predicts effort required for implementation
+    3. IEEE Standard 982.1-1988
+        - Considers properties of subsystems and database
+            - Computes Design Structure Quality Index
+        - Considers changes during the product lifetime and stability of product
+            - Defines Software Maturity Index
+- Metrics for Implementation
+    1. Halstead's Software Science
+    2. McCabe's Complexity Metric
+    3. Lines of Code
+    4. Length of identifiers
+    5. Depth of conditional nesting
+- Formal Approaches
+    1. Proving programs/specifications are correct
+    2. Statistical Quality Assurance
+    3. Cleanroom Process
+
+#### Achieving Project Quality
+
+- Reviews: Primary method for achieving project quality
+- Software Configuration Management: Manages, controls and monitors changes to life cycle artifacts
+
+#### Achieving Process Quality
+
+- Importance?
+    - Software quality can be independent of the process used
+    - People/Technology are *sometimes* more important than the process
+    - Software development process is often not transferable
+- ISO 9001/9000-3
+    - ISO 9000: Specifies actions to be taken when a system has quality goals and constraints
+    - ISO 9001 (clause 4.2): Organization must have documented quality system
+    - ISO 9000-3: How a quality system should be integrated in a software development process
+- SEI Process Capability Maturity Model
+    - Intended to assess/improve software development processes
+    1. Initial Process (ad hoc)
+        - Nothing formal really
+    2. Repeatable Process (intuitive)
+        - Basic project controls
+        - Intuitive methods used
+    3. Defined Process (qualitative)
+        - Well-defined development process
+        - Training provided
+    4. Managed Process (quantitative)
+        - Measured process
+        - Process database established
+    5. Optimizing Process
+        - Improvement feedback
+        - Defect-cause analysis and prevention
+
+#### Achieving People Quality
+
+- People Capability Maturity Model (PCMM)
+    - Intended to assess and improve knowledge and skill of people
+    1. Initial
+        - Nothing formal really
+    2. Repeatable
+        - Focus on developing basic work practices
+        - Training to fill "skill gaps"
+        - Performance evaluated
+    3. Defined
+        - Focus on tailoring work practices
+        - Strategic plan to local/develop required talent
+        - Skill-based compensation
+    4. Managed
+        - Focused on increasing competence in critical skills
+        - Mentoring, team-building
+        - Evaluation of work practice effectiveness
+    5. Optimizing
+        - Focus on improving team/individual skills
+
+## Managing Software Development
+
+`TODO(Derppening): ToC`
+
+### Project Management
+
+### The Software Development Plan
+
+Documents the scope of the development effort, and how the project will be managed.
+
+- Constrainted optimization problem with incomplete data
+- Input for SDP:
+    - Development Manager
+        - Organizes project, tasks, budget
+    - Experienced System Architect
+        - Design top-level system structure
+        - Estimate project's technical size
+    - Expert User/Domain Expert
+        - Provide understanding of requirements
+
+#### Deliverables
+
+SDP specifies when something should be delivered to who.
+
+- Client Products: Given to client
+- Process artifacts: Outcomes of development process
+- Internal deliverables: Continuing value to the development organization
+- Services: Additional deliverables for client
+
+#### Development Environment
+
+SDP specifies hardware and software tools for the project.
+
+- Need to evaluate:
+    - Support of the lifecycle
+    - Risk of adoption
+
+#### Work Breakdown Structure
+
+Breaks project into tasks/sub-tasks, applying divide and conquer.
+
+- Identifies all activities/tasks required to complete the project
+- Estimates resources required for entire project
+- Track budgets and schedules
+- Allows each task to be:
+    - Easily planned
+    - Easily assigned
+    - Tracked
+    - Budgeted
+    - Sufficiently granularized (*is that even a word?*)
+
+#### Staffing and Organization
+
+SDP defines a project organization.
+
+- Team organization should...
+    - Be modular
+    - Assign clear responsibilities
+    - Form teams to be responsible for subsystem(s)
+    - Identify PIC for each subsystem
+
+#### Schedules
+
+SDP defines the project schedule, including
+- Task ordering
+- Time estimates for each task
+- Resource assignment
+- Milestones
+- Deliverables
+- Critical path
+
+Maintained Schedules:
+- Master schedule: Rigid
+- Macroschedule: Semi-Rigid
+- Microschedule: Highly flexible
+
+Types of Charts
+- Gantt Chart
+- PERT Chart
+- Burndown Chart
+
+#### Estimates
+
+- SDP provides estimates of:
+    - Size
+    - Effort
+    - Duration
+    - Productivity
+    - Development cost
+- Estimates are based on:
+    - Experience
+    - Historical data
+    - Model
+    - Courage
+- Reduction of risk in estimation:
+    - Establish project scope
+    - Use past metrics
+    - Divide and conquer
+- Types of software metrics
+    - Size-Oriented (KLOC-based)
+    - Function-Oriented (FP-based)
+    - System-level Analogy: Using experience
+    - Pert Estimation
+    - Planning Poker
+    - Parametric Models
+
+#### Metrics Plan
+
+SDP should identify metrics to collect and ways to collect
+
+- Project management metrics usually related to size
+- Compare planned sized and current sizes to determine
+    - Progress?
+    - Stability?
+
+#### Risk Planning
+
+SDP plans for risk by:
+- Forseeing what could go wrong
+- Estimate its likelihood
+- Develop contingency plans
+
+#### Time-phased Budget
+
+SDP specifies a time-phased budget:
+- When the budget is planned to be spent
+- What is expected to be accomplished at each level
+
+
+### Project Tracking and Control
+
+- Need to have constant, consistent, inoffensive monitoring
+- Apply SCM to handle changes in a controlled manner
+    - Hold status meetings
+    - Do project reviews
+    - Check key performance indicators
+    - Compare budgets
+    - Chat with staff
