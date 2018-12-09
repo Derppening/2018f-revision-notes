@@ -326,6 +326,18 @@ Example of all coverage types:
 
 ## Software Engineering
 
+- Overview
+    - [The Four P's in Software Development](#the-four-p-s-in-software-development)
+- Software Development Process
+    - Monolithic
+        - [Waterfall](#waterfall-process)
+    - Iterative and Incremental
+        - [Code-and-Fix](#code-and-fix-process)
+        - [Prototyping](#prototyping-process)
+        - [Spiral](#spiral-process)
+        - [Phased-release](#phased-release-process)
+        - [Agile](#agile-process)
+
 - Software Development Life-Cycle Stages
   - Definition
   - Design
@@ -478,9 +490,16 @@ Example of all coverage types:
 
 ## System Requirements Capture
 
-`TODO(Derppening): Table of Contents`
+- [Overview](#requirements-capture-overview)
+  - [Importance of Requirements Capture](#importance-of-requirements-capture)
+  - [Why Requirements Capture is Difficult](#difficulties-of-requirements-capture)
+- [System Requirements Capture Activities](#system-requirements-capture-activities)
+  - [Capture Data Requirements: Domain Modeling](#capture-data-requirements--domain-modeling)
+  - [Capture Functional Requirements: Use-Case Modeling](#capture-functional-requirements--use-case-modeling)
+  - [Capturing Nonfunctional Requirements](#nonfunctional-requirements)
+  - [Validate System Requirements](#validate-system-requirements)
 
-### Overview
+### Requirements Capture Overview
 
 #### What is a Requirement?
 
@@ -760,7 +779,14 @@ Example of all coverage types:
 
 ## Implementation
 
-`TODO(Derppening): Table of Contents`
+- [Overview](#implementation-overview)
+  - [Implementation Activities](#implementation-activities)
+- [Producing Solid Code](#producing-solid-code--because-liquid-code-is-not-good-)
+  - [Defensive Programming](#defensive-programming)
+  - [Code Review](#code-review)
+  - [Refacoring](#refactoring)
+- [Debugging](#debugging)
+- [Configuration Management](#configuration-managment)
 
 ### Implementation Overview
 
@@ -887,6 +913,123 @@ Example of all coverage types:
 - Refactoring is expensive time-wise and cost-wise
 - But has long-lasting benefits
 - Do it continually
+
+### Debugging
+
+#### Defense 1: Make Error Impossible by Design
+
+- In the Language
+    - Java makes memory bugs impossible
+- In protocols/libraries/modules
+    - TCP/IP guarantees data is not reordered
+    - BigInteger guarantees no overflow
+- Self-imposed conventions
+    - Hierarchical locking guarantees no deadlock
+    - Banning recusion guarantees lack of infinite recusion and stack overflow
+    - Immutable data guarantees behavioral equality
+
+#### Defense 2: Do not Introduce Defects
+
+- Gets things right the first time
+    - Think before you code
+    - More easy-to-find bugs = More hard-to-find bugs
+- KISS (Keep It Simple, Stupid)
+    - Modularity
+        - Divide program into smaller chunks
+        - Use ADT with well-defined interfaces
+        - Defensive Programming
+    - Specification
+        - Write specifications for all modules
+
+#### Defense 3: Fail-Fast
+
+- Localize bugs to a small part of program
+- Take advantage of modularity
+    - Start with everything, and strip until bug appears
+    - Start with nothing, and add until bug appears
+- Take advantage of modular reasoning
+    - Trace program and view intermediates
+- Binary Search lines of code
+- Use assertions
+
+#### Can't find the bug?
+
+- Look for stupid mistakes, e.g.
+    - Reversed order of arguments: `Collections.copy(src, dest)`
+    - Misspelling of identifiers
+    - `a == b` vs `a.equals(b)`
+    - Failed to reinitialize variable
+    - Deep vs shallow copy
+- Ensure you have the right source code
+
+#### Inserting Checks
+
+- Insert lots of checks
+- Stop the program as close to the bug as possible
+- Assertions in production?
+    - Yes: Don't take risks
+    - No: Application can force its way
+
+#### Regression Testing
+
+- Whenever a bug is discovered:
+    - Add a test
+    - Re-run all tests
+
+#### The Last Resort
+
+- Bugs happen ¯\\\_(ツ)\_/¯
+    - Found in integration or reported by user
+- Steps to correct
+    1. Clarify symptom
+    2. Find and understand cause
+    3. Fix
+    4. Test all
+
+#### Still no clue?
+
+- Reconsider assumptions
+    - OS Change? Hard Drive has space?
+    - Debug the code, not the comments
+- (Re-)Documenting the system
+- Get help
+- Walk away
+
+### Configuration Management
+
+Manages, controls and monitors changes to lifecycle artifacts
+
+- Change management
+    - Tracks and evaluates proposed changes
+- Version management
+    - Tracks and manages versions of systems
+- System building
+    - Creates executable system from components, data and libraries
+- Release management
+    - Prepares and tracks system versions
+
+#### Change Managment
+
+Ensures system evolution is managed, giving priority to *most urgent* and *cost-effective* changes.
+
+- Support: Using Software Library
+    - Provides facilities to store, label and identify version
+    - Tracks status of configuration items
+- Change Control: Using Baselines
+    - Time/phase of development when all changes must be formalized/controlled
+    - Uses formal review procedures to evaluate whether to integrate into software library
+- Auditing: Ensure changes are properly implemented
+    - Done by QA team
+- Status Reporting: Keeps all parties informed and up-to-date
+
+#### Version Management
+
+Ensures integrity and consistency of configuration items.
+
+- Codeline: Sequence of versions, where later versions are derived from earlier versions
+- Version: Where item `k` is obtained by modifying item `i`, superseding it
+- Branch: Concurrnt development path requiring independent configuration management
+- Variant: Different configrations which shoudl coexist
 
 ## Testing
 
@@ -1280,7 +1423,17 @@ Types:
 
 ## System Analysis and Design
 
-`TODO(Derppening): ToC`
+- System Analysis and Design Overview
+  - [The Purpose and Importance of System Analysis and Design](#the-purpose-and-importance-of-system-analysis-and-design)
+  - [Realizing Design Goals](#realizing-design-goals)
+  - [Dealing with the Implementation Environment](#dealing-with-the-implementation-environment)
+- System Analysis and Design Activities
+  - [Architectural Analysis and Design](#architectural-analysis-and-design)
+  - [Use-case Analysis](#use-case-analysis)
+  - [Class Design](#class-design)
+  - [Object Behavior Analysis: State Machine Diagrams](#object-behavior-analysis--state-machine-diagrams)
+  - [Design Patterns](#design-patterns)
+  - [Anti Patterns](#anti-patterns)
 
 ### System Analysis and Design Overview
 
@@ -1505,7 +1658,14 @@ Types:
 
 ## Software Quality Assurance
 
-`TODO(Derppening): ToC`
+- Overview
+  - [Purpose and Importance](#purpose-and-importance)
+- [Achieving Software Quality](#achieving-software-quality)
+  - [SQA Activities](#sqa-activities)
+  - [Achieving Product Quality](#achieving-product-quality)
+  - [Achieving Project Quality](#achieving-project-quality)
+  - [Achieving Process Quality](#achieving-process-quality)
+  - [Achieving People Quality](#achieving-process-quality)
 
 ### Purpose and Importance
 
@@ -1646,9 +1806,17 @@ Type of measurements related to a software product, process, or artifact.
 
 ## Managing Software Development
 
-`TODO(Derppening): ToC`
-
-### Project Management
+- The Software Development Plan
+  - [Deliverables](#deliverables)
+  - [Development Environment](#development-environment)
+  - [Work Breakdown Structure](#work-breakdown-structure)
+  - [Staffing-and-Organization](#staffing-and-organization)
+  - [Schedules](#schedules)
+  - [Estimates](#estimates)
+  - [Metrics Plan](#metrics-plan)
+  - [Risk Planning](#risk-planning)
+  - [Time-phased Budge](#time-phased-budget)
+- [Project Tracking and Control](#project-tracking-and-control)
 
 ### The Software Development Plan
 
