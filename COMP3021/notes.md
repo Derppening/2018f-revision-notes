@@ -82,17 +82,7 @@ public class Main {
 
 All Java classes (except `java.lang.Object`) inherits from `java.lang.Object`.
 
-Class Structure:
-```java
-package java.lang;
-
-public class Object {
-    public int hashCode();
-    public boolean equals(Object obj);  // defaults to reference comparison
-    protected Object clone() throws CloneNotSupportedException;
-    public String toString();
-}
-```
+See appendix.
 
 ### Instance vs Static
 
@@ -206,11 +196,6 @@ Properties:
 - Has either:
     - An empty body **iff** the superclass is `Object`
     - A body of `super();` otherwise
-
-### Garbage Collection
-
-- Occurs when there are no reference variables referencing an object
-- Is non-deterministic, i.e. you don't know when the object will be GC'd
 
 ### Visibility Modifiers
 
@@ -326,27 +311,9 @@ s = "Bye World!";  // another new object created
 s = "Hello World";  // reuses "Hello World" object
 ```
 
-### Comparisons
+### Comparisons, Accessors
 
-- Equality Check (`boolean equals(Object)`)
-    - Checks whether two strings have the same contents
-    - Inherited from `java.lang.Object`
-- Lexicographical Comparison (`int compareTo(String)`)
-    - Checks whether this string is lexicographically bigger
-    - Inherited from `java.lang.Comparable<T>`
-
-### Accessors
-
-- String Length (`int length()`)
-- Character at Position (`char charAt(int)`)
-- Concatenation (`String concat(String)`)
-    - Returns a new `String` every time
-    - `+` operator achieves the same thing
-- Substring
-    - `String substring(int beginIndex)`: Extract from `beginIndex` inclusive to
-    end of string
-    - `String substring(int beginIndex, int endIndex)`: Extract from `beginIndex`
-    inclusive to `endIndex` exclusive
+See appendix.
 
 ### String-Number Conversions
 
@@ -439,7 +406,7 @@ keyword before the block
 clause
     - Overriden methods must either throw the same exceptions, subclass(es) of
     the declared exception, or no exceptions
-    - Note that unchecked exceptions do not matter
+    - Unchecked exceptions do not matter
 
 ### `try`-`catch`-`finally`
 
@@ -471,12 +438,9 @@ try (Scanner sc = new Scanner(new File(""));) {
 
 ### Assertions
 
-- assert expression `assert booleanExpression : "Message if false";`
+- assert expression: `assert booleanExpression : "Message if false";`
     - Throws `AssertionError` if assertion fails
     - Use `-ea` flag when launching JVM
-- `@NotNull` and `@Nullable`
-    - Annotations for IntelliJ
-    - Dynamically injects runtime checks
 
 ### File I/O
 
@@ -509,6 +473,7 @@ try (Scanner sc = new Scanner(new File(""));) {
     - `private` method
 - All non-`private` methods must be `public` or `package-access`
 - All fields are implicitly `public static final`
+- Static methods are allowed, no overriding required
 - Cannot contain instance fields
 
 #### `Comparable<E>`
@@ -749,7 +714,8 @@ void f() {
 
 - Compiled into `<outer class>$<inner class>.class`
     - `Outer$Inner.class`
-- Inner classes depend on outer classes, and must be constructed via an outer class instance
+- Inner classes depend on outer classes, and must be constructed via an outer
+class instance
 - Cannot delare:
     - Static initializers
     - Member interfaces
@@ -804,13 +770,9 @@ public interface EventHandler<T extends Event> extends EventListener {
 }
 ```
 
-### MouseEvent
+### MouseEvent and KeyboardEvent
 
-`TODO: Add in Appendix`
-
-### KeyboardEvent
-
-`TODO: Add in Appendix`
+See appendix.
 
 ### Listen for Observables
 
@@ -824,6 +786,11 @@ void f() {
     i.addListener((Observable o) -> { /* handle changes here */ });
 }
 ```
+
+### Notes
+
+- If you are not sure what thread your method will be running on, use
+`Platform.runLater(Runnable runnable)` on any UI updates
 
 ## Chapter 9: Multithreaded Programming
 
@@ -870,7 +837,7 @@ See appendix.
 
 ### `stop()`, `suspend()`, `resume()`
 
-Don't use them.
+Deprecated. Do not use.
 
 ### Thread Priority
 
@@ -908,3 +875,227 @@ See appendix.
 - `wait()`: Releases the lock, and sleeps until a condition is satisified
 - `notify()`: Notifies one `wait`ing threads to wake up and reacquire the lock
 - `notifyAll()`: `notify()` but wakes all threads
+
+## Generics
+
+### Terminology
+
+Given:
+
+```java
+class ArrayList<E> {}
+
+void f() {
+    var list = new ArrayList<String>();
+}
+```
+
+- `ArrayList<E>`: Generic Class/Type
+- `E`: Type Parameter
+- `ArrayList<String>`: Parameterized Type of `ArrayList<E>`
+- `String`: Actual type argument for `E`
+
+### Raw Type
+
+- If using a generic class without a type parameter (`new ArrayList()`), the
+type parameter will be inferred as `?`.
+- Accepts any actual type arguments
+
+```java
+static void print1(List<?> list) {}
+
+static void print2(List<Object> list) {}
+
+public static void main(String[] args) {
+    print1(new ArrayList<String>());  // valid
+    print2(new ArrayList<String>());  // invalid
+}
+```
+
+- Since type argument is not inferred, all types are `?`
+    - As parameter: Nothing except `null` can be passed into `?`
+    - As return type: Value can be auto-casted into `Object`
+
+```java
+public static void main(String[] args) {
+    ArrayList<?> list = new ArrayList<String>();
+    list.add("");  // invalid: requires capture<?>
+    list.add(null);
+    String s = list.get(0);  // invalid: expects String, got capture<?>
+    Object o = list.get(0);
+}
+```
+
+### Bounded Type Parameter
+
+- `<E extends Superclass<E>>`: `E` must extend/implement from `Superclass<E>`
+- Example: `<E extends Comparable<E>> E max(E o1, E o2);`
+    - `o1 instanceof Integer`, `o2 instanceof Integer`: Valid
+    - `o1 instanceof Integer`, `o2 instanceof Float`: Invalid
+- `<E super Subclass<E>>`: `E` must be a superclass of `Subclass<E>`
+    - `super` can only appear in method parameter
+- Example: `static <E> void add(List<? super E> list, E elem);`
+    - `list instanceof List<Number>`, `elem instanceof Integer`: Valid
+    - `list instanceof List<Integer>`, `elem instanceof Number`: Invalid
+
+### Issues with Generics
+
+- Remember to use generics when operating on a generic class
+
+```java
+static void print1(List<Object> list) {
+    list.add("");  // valid
+    list.add(null);  // valid
+
+    Object o = list.get(0);  // valid
+    String s = list.get(0);  // invalid. requires casting, may throw ClassCastException
+}
+
+static void print3(List<?> list) {
+    list.add("");  // invalid
+    list.add(null);  // valid
+
+    Object o = list.get(0);  // valid
+    String s = list.get(0);  // invalid. requires casting, may throw ClassCastException
+}
+
+static <T> void print2(List<T> list) {
+    list.add("");  // invalid. cannot cast T to int
+    list.add(null);  // valid
+
+    Object o = list.get(0);  // valid
+    String s = list.get(0);  // invalid. requires casting, may throw ClassCastException
+    T o2 = list.get(0);  // valid
+}
+
+public static void main(String[] args) {
+    print1(new ArrayList<String>());  // invalid
+    print2(new ArrayList<String>());  // valid
+    print3(new ArrayList<String>()); // valid
+}
+```
+
+### Generic Types and Wildcard Types
+
+![](img/10-gs.png)
+
+### Restrictions
+
+1. Cannot create an instance of a generic type.
+    - `new T();`: compile-time error
+2. Cannot create a generic array
+    - `new T[100]`: compile-time error
+3. Static methods/fields cannot have generic type parameter.
+4. Exception classes cannot be generic.
+
+## Functional Programming with Lambda Expressions
+
+### Syntax
+
+```java
+interface Names {
+    void sayName(String n);
+}
+
+void myName(Names block, String name) { block.sayName(name); }
+
+void f() {
+    // without lambda
+    myName(new Names() {
+        @Override
+        public void sayName(String n) { System.out.println("My Name is " + n); }
+    }, "John");
+
+    // basic lambda
+    myName((String n) -> { System.out.println("My Name is " + n); }, "John");
+
+    // omit parameter type (auto type inference)
+    myName((n) -> { System.out.println("My Name is " + n); }, "John");
+
+    // remove redundant constructs
+    myName(n -> System.out.println("My Name is " + n), "John");
+}
+```
+
+### Lazy Evaluation
+
+- Lambdas are only executed when explicitly invoked
+
+```java
+long measure(Runnable r) {
+    long startTime = System.nanoTime();
+    r.run();
+    return System.nanoTime() - startTime;
+}
+
+void f() {
+    measure(() -> /* thing to run */);
+}
+```
+
+- Does not work with `measure(/* method to run */)`, since method is evaluated
+before invoking `measure`
+
+### `@FunctionalInterface`
+
+See appendix.
+
+- Must only contain "single abstract method", and zero or more default methods
+
+### Method References
+
+- Lambda expressions can be simplified by method references
+    - Instances: `instance::method`
+    - Static: `Class::method`
+    - Constructor: `Class::new`
+    - Array Constructor: `Class[]::new`
+- Replaces any expression with form of `(o1, o2, ..., o) -> f(o1, o2, ... o);`
+- Ambiguities resolved by matching the correct method reference with the SAM interface
+
+### Lambda Scope
+
+```java
+int y = 0;
+
+<T> void f(Function<Double, T> block);
+
+void foo() {
+    double x = 0;
+    f(x -> x + x);  // error: variable already defined in scope
+    f(y -> {
+        double x = 0;  // error: variable already defined in scope
+    });
+    f(y -> x = 3.4);  // error: variables captured in lambdas should be effectively final
+    f(y -> y + 1);  // legal. this.y is still accessible
+}
+```
+
+### Built-in Functional Interfaces
+
+See appendix.
+
+- `Predicate<T>`
+- `Function<T, R>`
+- `Consumer<T>`
+- `Supplier<T>`
+
+### Type Casting
+
+- Functional interfaces cannot be automatically casted to one another, even if
+the SAM has same method signature
+- Casting one interface to another will result in an "Unchecked Cast"
+compile-time warning
+- Lambdas cannot be type-inferred
+- Lambdas can be casted into functional interfaces
+
+### Streams
+
+See appendix.
+
+### Default Methods
+
+- Allows new functionality while keeping backward compatibility
+- Must be `public`
+- Cannot be `final`
+- Can be overriden
+    - Invoke default method using `InterfaceName.super`

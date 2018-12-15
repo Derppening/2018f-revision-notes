@@ -1,10 +1,19 @@
-## Appendix: API Documentation (by appearence in Lecture Notes)
+## Appendix A: Java 12 and JavaFX 12 API Documentation
 
 ### `java.util.ArrayList<E>`
 
 ```java
 package java.util;
 
+/**
+ * Resizable-array implementation of the {@code List} interface.  Implements
+ * all optional list operations, and permits all elements, including
+ * {@code null}.  In addition to implementing the {@code List} interface,
+ * this class provides methods to manipulate the size of the array that is
+ * used internally to store the list.
+ *
+ * @param <E> the type of elements in this list
+ */
 public class ArrayList<E> extends AbstractList<E>
         implements List<E>, RandomAccess, Cloneable, java.io.Serializable {
     /**
@@ -39,9 +48,6 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * Returns {@code true} if this list contains the specified element.
-     * More formally, returns {@code true} if and only if this list contains
-     * at least one element {@code e} such that
-     * {@code Objects.equals(o, e)}.
      *
      * @param o element whose presence in this list is to be tested
      * @return {@code true} if this list contains the specified element
@@ -60,9 +66,6 @@ public class ArrayList<E> extends AbstractList<E>
     /**
      * Returns the index of the first occurrence of the specified element
      * in this list, or -1 if this list does not contain the element.
-     * More formally, returns the lowest index {@code i} such that
-     * {@code Objects.equals(o, get(i))},
-     * or -1 if there is no such index.
      */
     public int indexOf(Object o);
 
@@ -76,21 +79,13 @@ public class ArrayList<E> extends AbstractList<E>
     /**
      * Returns the index of the last occurrence of the specified element
      * in this list, or -1 if this list does not contain the element.
-     * More formally, returns the highest index {@code i} such that
-     * {@code Objects.equals(o, get(i))},
-     * or -1 if there is no such index.
      */
     public int lastIndexOf(Object o);
 
     /**
      * Removes the first occurrence of the specified element from this list,
      * if it is present.  If the list does not contain the element, it is
-     * unchanged.  More formally, removes the element with the lowest index
-     * {@code i} such that
-     * {@code Objects.equals(o, get(i))}
-     * (if such an element exists).  Returns {@code true} if this list
-     * contained the specified element (or equivalently, if this list
-     * changed as a result of the call).
+     * unchanged.
      *
      * @param o element to be removed from this list, if present
      * @return {@code true} if this list contained the specified element
@@ -107,12 +102,7 @@ public class ArrayList<E> extends AbstractList<E>
     /**
      * Removes the first occurrence of the specified element from this list,
      * if it is present.  If the list does not contain the element, it is
-     * unchanged.  More formally, removes the element with the lowest index
-     * {@code i} such that
-     * {@code Objects.equals(o, get(i))}
-     * (if such an element exists).  Returns {@code true} if this list
-     * contained the specified element (or equivalently, if this list
-     * changed as a result of the call).
+     * unchanged.
      *
      * @param o element to be removed from this list, if present
      * @return {@code true} if this list contained the specified element
@@ -154,6 +144,22 @@ public class ArrayList<E> extends AbstractList<E>
      */
     @SuppressWarnings("unchecked")
     public <T> T[] toArray(T[] a);
+
+    /**
+     * Returns a sequential {@code Stream} with this collection as its source.
+     *
+     * @return a sequential {@code Stream} over the elements in this collection
+     */
+    default Stream<E> stream();
+
+    /**
+     * Returns a possibly parallel {@code Stream} with this collection as its
+     * source.  It is allowable for this method to return a sequential stream.
+     *
+     * @return a possibly parallel {@code Stream} over the elements in this
+     * collection
+     */
+    default Stream<E> parallelStream();
 }
 ```
 
@@ -162,12 +168,19 @@ public class ArrayList<E> extends AbstractList<E>
 ```java
 package java.util;
 
+/**
+ * This class contains various methods for manipulating arrays (such as
+ * sorting and searching). This class also contains a static factory
+ * that allows arrays to be viewed as lists.
+ *
+ * <p>The methods in this class all throw a {@code NullPointerException},
+ * if the specified array reference is null, except where noted.
+ */
 public class Arrays {
     /**
      * Returns a fixed-size list backed by the specified array. Changes made to
      * the array will be visible in the returned list, and changes made to the
-     * list will be visible in the array. The returned list is
-     * {@link Serializable} and implements {@link RandomAccess}.
+     * list will be visible in the array.
      *
      * @param <T> the class of the objects in the array
      * @param a the array by which the list will be backed
@@ -185,21 +198,30 @@ public class Arrays {
 ```java
 package java.lang;
 
+/**
+ * The {@code String} class represents character strings. All
+ * string literals in Java programs, such as {@code "abc"}, are
+ * implemented as instances of this class.
+ * <p>
+ * Strings are constant; their values cannot be changed after they
+ * are created. String buffers support mutable strings.
+ *
+ * <p> Unless otherwise noted, passing a {@code null} argument to a constructor
+ * or method in this class will cause a {@link NullPointerException} to be
+ * thrown.
+ */
 public final class String
     implements java.io.Serializable, Comparable<String>, CharSequence {
     /**
      * Initializes a newly created {@code String} object so that it represents
-     * an empty character sequence.  Note that use of this constructor is
-     * unnecessary since Strings are immutable.
+     * an empty character sequence.
      */
     public String();
 
     /**
      * Initializes a newly created {@code String} object so that it represents
      * the same sequence of characters as the argument; in other words, the
-     * newly created string is a copy of the argument string. Unless an
-     * explicit copy of {@code original} is needed, use of this constructor is
-     * unnecessary since Strings are immutable.
+     * newly created string is a copy of the argument string.
      *
      * @param  original
      *         A {@code String}
@@ -223,16 +245,6 @@ public final class String
 
     /**
      * Compares two strings lexicographically.
-     * The comparison is based on the Unicode value of each character in
-     * the strings. The character sequence represented by this
-     * {@code String} object is compared lexicographically to the
-     * character sequence represented by the argument string. The result is
-     * a negative integer if this {@code String} object
-     * lexicographically precedes the argument string. The result is a
-     * positive integer if this {@code String} object lexicographically
-     * follows the argument string. The result is zero if the strings
-     * are equal; {@code compareTo} returns {@code 0} exactly when
-     * the {@link #equals(Object)} method would return {@code true}.
      *
      * @param   anotherString   the {@code String} to be compared.
      * @return  the value {@code 0} if the argument string is equal to
@@ -286,8 +298,6 @@ public final class String
 
     /**
      * Returns the length of this string.
-     * The length is equal to the number of <a href="Character.html#unicode">Unicode
-     * code units</a> in the string.
      *
      * @return  the length of the sequence of characters represented by this
      *          object.
@@ -312,13 +322,6 @@ public final class String
 
     /**
      * Concatenates the specified string to the end of this string.
-     * <p>
-     * If the length of the argument string is {@code 0}, then this
-     * {@code String} object is returned. Otherwise, a
-     * {@code String} object is returned that represents a character
-     * sequence that is the concatenation of the character sequence
-     * represented by this {@code String} object and the character
-     * sequence represented by the argument string.
      *
      * @param   str   the {@code String} that is concatenated to the end
      *                of this {@code String}.
@@ -378,12 +381,7 @@ public final class String
 
     /**
      * Returns a string whose value is this string, with all leading
-     * and trailing space removed, where space is defined
-     * as any character whose codepoint is less than or equal to
-     * {@code 'U+0020'} (the space character).
-     * <p>
-     * This method may be used to trim space (as defined above) from
-     * the beginning and end of a string.
+     * and trailing space removed.
      *
      * @return  a string whose value is this string, with all leading
      *          and trailing space removed, or this string if it
@@ -394,15 +392,6 @@ public final class String
     /**
      * Returns a string resulting from replacing all occurrences of
      * {@code oldChar} in this string with {@code newChar}.
-     * <p>
-     * If the character {@code oldChar} does not occur in the
-     * character sequence represented by this {@code String} object,
-     * then a reference to this {@code String} object is returned.
-     * Otherwise, a {@code String} object is returned that
-     * represents a character sequence identical to the character sequence
-     * represented by this {@code String} object, except that every
-     * occurrence of {@code oldChar} is replaced by an occurrence
-     * of {@code newChar}.
      *
      * @param   oldChar   the old character.
      * @param   newChar   the new character.
@@ -463,22 +452,7 @@ public final class String
 
     /**
      * Returns the index within this string of the first occurrence of
-     * the specified character. If a character with value
-     * {@code ch} occurs in the character sequence represented by
-     * this {@code String} object, then the index (in Unicode
-     * code units) of the first such occurrence is returned. For
-     * values of {@code ch} in the range from 0 to 0xFFFF
-     * (inclusive), this is the smallest value <i>k</i> such that:
-     * <blockquote><pre>
-     * this.charAt(<i>k</i>) == ch
-     * </pre></blockquote>
-     * is true. For other values of {@code ch}, it is the
-     * smallest value <i>k</i> such that:
-     * <blockquote><pre>
-     * this.codePointAt(<i>k</i>) == ch
-     * </pre></blockquote>
-     * is true. In either case, if no such character occurs in this
-     * string, then {@code -1} is returned.
+     * the specified character.
      *
      * @param   ch   a character (Unicode code point).
      * @return  the index of the first occurrence of the character in the
@@ -491,33 +465,11 @@ public final class String
      * Returns the index within this string of the first occurrence of the
      * specified character, starting the search at the specified index.
      * <p>
-     * If a character with value {@code ch} occurs in the
-     * character sequence represented by this {@code String}
-     * object at an index no smaller than {@code fromIndex}, then
-     * the index of the first such occurrence is returned. For values
-     * of {@code ch} in the range from 0 to 0xFFFF (inclusive),
-     * this is the smallest value <i>k</i> such that:
-     * <blockquote><pre>
-     * (this.charAt(<i>k</i>) == ch) {@code &&} (<i>k</i> &gt;= fromIndex)
-     * </pre></blockquote>
-     * is true. For other values of {@code ch}, it is the
-     * smallest value <i>k</i> such that:
-     * <blockquote><pre>
-     * (this.codePointAt(<i>k</i>) == ch) {@code &&} (<i>k</i> &gt;= fromIndex)
-     * </pre></blockquote>
-     * is true. In either case, if no such character occurs in this
-     * string at or after position {@code fromIndex}, then
-     * {@code -1} is returned.
-     *
-     * <p>
      * There is no restriction on the value of {@code fromIndex}. If it
      * is negative, it has the same effect as if it were zero: this entire
      * string may be searched. If it is greater than the length of this
      * string, it has the same effect as if it were equal to the length of
      * this string: {@code -1} is returned.
-     *
-     * <p>All indices are specified in {@code char} values
-     * (Unicode code units).
      *
      * @param   ch          a character (Unicode code point).
      * @param   fromIndex   the index to start the search from.
@@ -531,12 +483,6 @@ public final class String
     /**
      * Returns the index within this string of the first occurrence of the
      * specified substring.
-     *
-     * <p>The returned index is the smallest value {@code k} for which:
-     * <pre>{@code
-     * this.startsWith(str, k)
-     * }</pre>
-     * If no such value of {@code k} exists, then {@code -1} is returned.
      *
      * @param   str   the substring to search for.
      * @return  the index of the first occurrence of the specified substring,
@@ -574,6 +520,7 @@ public final class String
      * @see     java.lang.Double#toString(double)
      */
     public static String valueOf(double d);
+    // valueOf(...) primitive overloads
 
     /**
      * Returns a formatted string using the specified format string and
@@ -586,21 +533,13 @@ public final class String
      *         Arguments referenced by the format specifiers in the format
      *         string.  If there are more arguments than format specifiers, the
      *         extra arguments are ignored.  The number of arguments is
-     *         variable and may be zero.  The maximum number of arguments is
-     *         limited by the maximum dimension of a Java array as defined by
-     *         <cite>The Java&trade; Virtual Machine Specification</cite>.
-     *         The behaviour on a
-     *         {@code null} argument depends on the <a
-     *         href="../util/Formatter.html#syntax">conversion</a>.
+     *         variable and may be zero.
      *
      * @throws  java.util.IllegalFormatException
      *          If a format string contains an illegal syntax, a format
      *          specifier that is incompatible with the given arguments,
      *          insufficient arguments given the format string, or other
-     *          illegal conditions.  For specification of all possible
-     *          formatting errors, see the <a
-     *          href="../util/Formatter.html#detail">Details</a> section of the
-     *          formatter class specification.
+     *          illegal conditions.
      *
      * @return  A formatted string
      */
@@ -613,14 +552,14 @@ public final class String
 ```java
 package java.lang;
 
+/**
+ * Class {@code Object} is the root of the class hierarchy.
+ * Every class has {@code Object} as a superclass. All objects,
+ * including arrays, implement the methods of this class.
+ */
 public class Object {
     /**
      * Indicates whether some other object is "equal to" this one.
-     * <p>
-     * Note that it is generally necessary to override the {@code hashCode}
-     * method whenever this method is overridden, so as to maintain the
-     * general contract for the {@code hashCode} method, which states
-     * that equal objects must have equal hash codes.
      *
      * @param   obj   the reference object with which to compare.
      * @return  {@code true} if this object is the same as the obj
@@ -629,24 +568,15 @@ public class Object {
     public boolean equals(Object obj);
 
     /**
-     * Returns a hash code value for the object. This method is
-     * supported for the benefit of hash tables such as those provided by
-     * {@link java.util.HashMap}.
+     * Returns a hash code value for the object.
      *
      * @return  a hash code value for this object.
-     * @see     java.lang.Object#equals(java.lang.Object)
-     * @see     java.lang.System#identityHashCode
      */
     @HotSpotIntrinsicCandidate
     public native int hashCode();
 
     /**
-     * Returns a string representation of the object. In general, the
-     * {@code toString} method returns a string that
-     * "textually represents" this object. The result should
-     * be a concise but informative representation that is easy for a
-     * person to read.
-     * It is recommended that all subclasses override this method.
+     * Returns a string representation of the object.
      *
      * @return  a string representation of the object.
      */
@@ -680,7 +610,6 @@ public class Object {
      *               that override the {@code clone} method can also
      *               throw this exception to indicate that an instance cannot
      *               be cloned.
-     * @see java.lang.Cloneable
      */
     @HotSpotIntrinsicCandidate
     protected native Object clone() throws CloneNotSupportedException;
@@ -688,20 +617,12 @@ public class Object {
     /**
      * Causes the current thread to wait until it is awakened, typically
      * by being <em>notified</em> or <em>interrupted</em>.
-     * <p>
-     * In all respects, this method behaves as if {@code wait(0L, 0)}
-     * had been called. See the specification of the {@link #wait(long, int)} method
-     * for details.
      *
      * @throws IllegalMonitorStateException if the current thread is not
      *         the owner of the object's monitor
      * @throws InterruptedException if any thread interrupted the current thread before or
      *         while the current thread was waiting. The <em>interrupted status</em> of the
      *         current thread is cleared when this exception is thrown.
-     * @see    #notify()
-     * @see    #notifyAll()
-     * @see    #wait(long)
-     * @see    #wait(long, int)
      */
     public final void wait() throws InterruptedException;
 
@@ -768,6 +689,11 @@ public class Object {
 ```java
 package java.lang;
 
+/**
+ * The {@code Integer} class wraps a value of the primitive type
+ * {@code int} in an object. An object of type {@code Integer}
+ * contains a single field whose type is {@code int}.
+ */
 public final class Integer extends Number implements Comparable<Integer> {
     /**
      * Constructs a newly allocated {@code Integer} object that
@@ -825,8 +751,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      * Parses the string argument as a signed decimal integer. The
      * characters in the string must all be decimal digits, except
      * that the first character may be an ASCII minus sign {@code '-'}
-     * ({@code '\u005Cu002D'}) to indicate a negative value or an
-     * ASCII plus sign {@code '+'} ({@code '\u005Cu002B'}) to
+     * to indicate a negative value or an ASCII plus sign {@code '+'} to
      * indicate a positive value. The resulting integer value is
      * returned, exactly as if the argument and the radix 10 were
      * given as arguments to the {@link #parseInt(java.lang.String,
@@ -859,6 +784,12 @@ public final class Integer extends Number implements Comparable<Integer> {
 ```java
 package java.lang;
 
+/**
+ * The abstract class {@code Number} is the superclass of platform
+ * classes representing numeric values that are convertible to the
+ * primitive types {@code byte}, {@code double}, {@code float}, {@code
+ * int}, {@code long}, and {@code short}.
+ */
 public abstract class Number implements java.io.Serializable {
     /**
      * Returns the value of the specified number as an {@code int}.
@@ -921,6 +852,11 @@ public abstract class Number implements java.io.Serializable {
 ```java
 package java.lang;
 
+/**
+ * The class {@code Exception} and its subclasses are a form of
+ * {@code Throwable} that indicates conditions that a reasonable
+ * application might want to catch.
+ */
 public class Exception extends Throwable {
     /**
      * Constructs a new exception with {@code null} as its detail message.
@@ -967,17 +903,7 @@ public class Exception extends Throwable {
          * {@code Throwable} object on the error output stream that is
          * the value of the field {@code System.err}. The first line of
          * output contains the result of the {@link #toString()} method for
-         * this object.  Remaining lines represent data previously recorded by
-         * the method {@link #fillInStackTrace()}.
-         * The backtrace for a throwable with an initialized, non-null cause
-         * should generally include the backtrace for the cause.
-         * Note the presence of lines containing the characters {@code "..."}.
-         * These lines indicate that the remainder of the stack trace for this
-         * exception matches the indicated number of frames from the bottom of the
-         * stack trace of the exception that was caused by this exception (the
-         * "enclosing" exception).  This shorthand can greatly reduce the length
-         * of the output in the common case where a wrapped exception is thrown
-         * from same method as the "causative exception" is caught.
+         * this object.
          */
         public void printStackTrace();
 }
@@ -988,14 +914,19 @@ public class Exception extends Throwable {
 ```java
 package java.io;
 
+/**
+ * Prints formatted representations of objects to a text-output stream.  This
+ * class implements all of the {@code print} methods found in {@link
+ * PrintStream}.
+ *
+ * <p> Methods in this class never throw I/O exceptions, although some of its
+ * constructors may.  The client may inquire as to whether any errors have
+ * occurred by invoking {@link #checkError checkError()}.
+ */
 public class PrintWriter extends Writer {
     /**
      * Creates a new PrintWriter, without automatic line flushing, with the
-     * specified file name.  This convenience constructor creates the necessary
-     * intermediate {@link java.io.OutputStreamWriter OutputStreamWriter},
-     * which will encode characters using the {@linkplain
-     * java.nio.charset.Charset#defaultCharset() default charset} for this
-     * instance of the Java virtual machine.
+     * specified file name.
      *
      * @param  fileName
      *         The name of the file to use as the destination of this writer.
@@ -1027,6 +958,20 @@ public class PrintWriter extends Writer {
 ```java
 package java.io;
 
+/**
+ * A simple text scanner which can parse primitive types and strings using
+ * regular expressions.
+ *
+ * <p>A scanning operation may block waiting for input.
+ *
+ * <p>When a scanner throws an {@link InputMismatchException}, the scanner
+ * will not pass the token that caused the exception, so that it may be
+ * retrieved or skipped via some other method.
+ *
+ * <p>Unless otherwise mentioned, passing a {@code null} parameter into
+ * any method of a {@code Scanner} will cause a
+ * {@code NullPointerException} to be thrown.
+ */
 public final class Scanner implements Iterator<String>, Closeable {
     /**
      * Constructs a new {@code Scanner} that produces values scanned
@@ -1184,6 +1129,12 @@ public final class Scanner implements Iterator<String>, Closeable {
 ```java
 package java.util;
 
+/**
+ * This interface imposes a total ordering on the objects of each class that
+ * implements it.
+ *
+ * @param <T> the type of objects that this object may be compared to
+ */
 public interface Comparable<T> {
     /**
      * Compares this object with the specified object for order.  Returns a
@@ -1207,7 +1158,210 @@ public interface Comparable<T> {
 ```java
 package java.util;
 
+/**
+ * A class implements the <code>Cloneable</code> interface to
+ * indicate to the {@link java.lang.Object#clone()} method that it
+ * is legal for that method to make a
+ * field-for-field copy of instances of that class.
+ * <p>
+ * Invoking Object's clone method on an instance that does not implement the
+ * <code>Cloneable</code> interface results in the exception
+ * <code>CloneNotSupportedException</code> being thrown.
+ */
 public interface Cloneable {}
+```
+
+### `javafx.scene.input.MouseEvent`
+
+```java
+package javafx.scene.input;
+
+/**
+ * When mouse event occurs, the top-most node under cursor is picked and
+ * the event is delivered to it through capturing and bubbling phases
+ * described at {@link javafx.event.EventDispatcher EventDispatcher}.
+ * <p>
+ * The mouse (pointer's) location is available relative to several
+ * coordinate systems: x,y - relative to the origin of the
+ * MouseEvent's node, sceneX,sceneY - relative to to the
+ * origin of the {@code Scene} that contains the node,
+ * screenX,screenY - relative to origin of the screen that
+ * contains the mouse pointer.
+ */
+public class MouseEvent extends InputEvent {
+    /**
+     * Which, if any, of the mouse buttons is responsible for this event.
+     *
+     * @return mouse button whose state change caused this event
+     */
+    public final MouseButton getButton();
+
+    /**
+     * Returns number of mouse clicks associated with this event. The
+     * value is increased with MOUSE_PRESSED event and stays like
+     * that for all subsequent events till MOUSE_RELEASED, including the
+     * afterwards generated MOUSE_CLICKED event. The value is increased
+     * to numbers higher than one if all the events between two subsequent
+     * presses happen on a small region and in a small time (according
+     * to native operating system configuration).
+     *
+     * @return number of mouse clicks associated with this event
+     */
+    public final int getClickCount();
+
+    /**
+     * Horizontal position of the event relative to the
+     * origin of the MouseEvent's source.
+     *
+     * @return horizontal position of the event relative to the
+     * origin of the MouseEvent's source.
+     */
+    public final double getX();
+
+    /**
+     * Vertical position of the event relative to the
+     * origin of the MouseEvent's source.
+     *
+     * @return vertical position of the event relative to the
+     * origin of the MouseEvent's source.
+     */
+    public final double getY();
+
+    /**
+     * Returns horizontal position of the event relative to the
+     * origin of the {@code Scene} that contains the MouseEvent's source.
+     * If the node is not in a {@code Scene}, then the value is relative to
+     * the boundsInParent of the root-most parent of the MouseEvent's node.
+     * Note that in 3D scene, this represents the flat coordinates after
+     * applying the projection transformations.
+     *
+     * @return horizontal position of the event relative to the
+     * origin of the {@code Scene} that contains the MouseEvent's source
+     */
+    public final double getSceneX();
+
+    /**
+     * Returns vertical position of the event relative to the
+     * origin of the {@code Scene} that contains the MouseEvent's source.
+     * If the node is not in a {@code Scene}, then the value is relative to
+     * the boundsInParent of the root-most parent of the MouseEvent's node.
+     * Note that in 3D scene, this represents the flat coordinates after
+     * applying the projection transformations.
+     *
+     * @return vertical position of the event relative to the
+     * origin of the {@code Scene} that contains the MouseEvent's source
+     */
+    public final double getSceneY();
+
+    /**
+     * Returns absolute horizontal position of the event.
+     * @return absolute horizontal position of the event
+     */
+    public final double getScreenX();
+
+    /**
+     * Returns absolute vertical position of the event.
+     * @return absolute vertical position of the event
+     */
+    public final double getScreenY();
+
+    /**
+     * Whether or not the Alt modifier is down on this event.
+     * @return true if the Alt modifier is down on this event
+     */
+    public final boolean isAltDown();
+
+    /**
+     * Whether or not the Control modifier is down on this event.
+     * @return true if the Control modifier is down on this event
+     */
+    public final boolean isControlDown();
+
+    /**
+     * Whether or not the Meta modifier is down on this event.
+     * @return true if the Meta modifier is down on this event
+     */
+    public final boolean isMetaDown();
+
+    /**
+     * Whether or not the Shift modifier is down on this event.
+     * @return true if the Shift modifier is down on this event
+     */
+    public final boolean isShiftDown();
+}
+```
+
+### `javafx.scene.input.KeyEvent`
+
+```java
+package javafx.scene.input;
+
+/**
+ * An event which indicates that a keystroke occurred in a component.
+ * <p>
+ * This low-level event is generated by a component object (such as a text
+ * field) when a key is pressed, released, or typed.
+ * The event is passed to every {@code KeyListener}
+ * or {@code KeyAdapter} object which registered to receive such
+ * events using the component's {@code addKeyListener} method.
+ * ({@code KeyAdapter} objects implement the
+ * {@code KeyListener} interface.)  Each such listener object
+ * gets this {@code KeyEvent} when the event occurs.
+ */
+public final class KeyEvent extends InputEvent {
+    /**
+     * The Unicode character or sequence of characters associated with the key
+     * typed event. Contains multiple elements if the key produced a single
+     * Unicode character from outside of the Basic Multilingual Plane which
+     * needs to be encoded by the corresponding surrogate pair in Java or if
+     * the key produced multiple Unicode characters itself.
+     *
+     * @return The Unicode character(s) associated with the key typed event
+     */
+    public final String getCharacter();
+
+    /**
+     * The key code associated with the key in this key pressed or key released
+     * event. For key typed events, {@code code} is always {@code KeyCode.UNDEFINED}.
+     *
+     * @return The key code associated with the key in this event,
+     * {@code KeyCode.UNDEFINED} for key typed event
+     */
+    public final KeyCode getCode();
+
+    /**
+     * A String describing the key code, such as "HOME", "F1" or "A",
+     * for key pressed and key released events.
+     * For key typed events, {@code text} is always the empty string.
+     *
+     * @return A String describing the key code
+     */
+    public final String getText();
+
+    /**
+     * Returns whether or not the Alt modifier is down on this event.
+     * @return whether or not the Alt modifier is down on this event.
+     */
+    public final boolean isAltDown();
+
+    /**
+     * Returns whether or not the Control modifier is down on this event.
+     * @return whether or not the Control modifier is down on this event.
+     */
+    public final boolean isControlDown();
+
+    /**
+     * Returns whether or not the Meta modifier is down on this event.
+     * @return whether or not the Meta modifier is down on this event.
+     */
+    public final boolean isMetaDown();
+
+    /**
+     * Returns whether or not the Shift modifier is down on this event.
+     * @return whether or not the Shift modifier is down on this event.
+     */
+    public final boolean isShiftDown();
+}
 ```
 
 ### `java.lang.Thread`
@@ -1215,6 +1369,38 @@ public interface Cloneable {}
 ```java
 package java.lang;
 
+/**
+ * A <i>thread</i> is a thread of execution in a program. The Java
+ * Virtual Machine allows an application to have multiple threads of
+ * execution running concurrently.
+ * <p>
+ * Every thread has a priority. Threads with higher priority are
+ * executed in preference to threads with lower priority. Each thread
+ * may or may not also be marked as a daemon. When code running in
+ * some thread creates a new {@code Thread} object, the new
+ * thread has its priority initially set equal to the priority of the
+ * creating thread, and is a daemon thread if and only if the
+ * creating thread is a daemon.
+ * <p>
+ * When a Java Virtual Machine starts up, there is usually a single
+ * non-daemon thread (which typically calls the method named
+ * {@code main} of some designated class). The Java Virtual
+ * Machine continues to execute threads until either of the following
+ * occurs:
+ * <ul>
+ * <li>The {@code exit} method of class {@code Runtime} has been
+ *     called and the security manager has permitted the exit operation
+ *     to take place.
+ * <li>All threads that are not daemon threads have died, either by
+ *     returning from the call to the {@code run} method or by
+ *     throwing an exception that propagates beyond the {@code run}
+ *     method.
+ * </ul>
+ * <p>
+ * Unless otherwise noted, passing a {@code null} argument to a constructor
+ * or method in this class will cause a {@link NullPointerException} to be
+ * thrown.
+ */
 public class Thread implements Runnable {
     /**
      * The minimum priority that a thread can have.
@@ -1378,6 +1564,13 @@ public class Thread implements Runnable {
 ```java
 package java.util.concurrent;
 
+/**
+ * An object that executes submitted {@link Runnable} tasks. This
+ * interface provides a way of decoupling task submission from the
+ * mechanics of how each task will be run, including details of thread
+ * use, scheduling, etc.  An {@code Executor} is normally used
+ * instead of explicitly creating threads.
+ */
 public interface Executor {
 
     /**
@@ -1399,6 +1592,11 @@ public interface Executor {
 ```java
 package java.util.concurrent;
 
+/**
+ * An {@link Executor} that provides methods to manage termination and
+ * methods that can produce a {@link Future} for tracking progress of
+ * one or more asynchronous tasks.
+ */
 public interface ExecutorService extends Executor {
 
     /**
@@ -1459,6 +1657,12 @@ public interface ExecutorService extends Executor {
 ```java
 package java.util.concurrent;
 
+/**
+ * Factory and utility methods for {@link Executor}, {@link
+ * ExecutorService}, {@link ScheduledExecutorService}, {@link
+ * ThreadFactory}, and {@link Callable} classes defined in this
+ * package.
+ */
 public class Executors {
     /**
      * Creates a thread pool that reuses a fixed number of threads
@@ -1466,10 +1670,8 @@ public class Executors {
      * {@code nThreads} threads will be active processing tasks.
      * If additional tasks are submitted when all threads are active,
      * they will wait in the queue until a thread is available.
-     * If any thread terminates due to a failure during execution
-     * prior to shutdown, a new one will take its place if needed to
-     * execute subsequent tasks.  The threads in the pool will exist
-     * until it is explicitly {@link ExecutorService#shutdown shutdown}.
+     * The threads in the pool will exist until it is explicitly
+     * {@link ExecutorService#shutdown shutdown}.
      *
      * @param nThreads the number of threads in the pool
      * @return the newly created thread pool
@@ -1480,16 +1682,9 @@ public class Executors {
     /**
      * Creates a thread pool that creates new threads as needed, but
      * will reuse previously constructed threads when they are
-     * available.  These pools will typically improve the performance
-     * of programs that execute many short-lived asynchronous tasks.
-     * Calls to {@code execute} will reuse previously constructed
-     * threads if available. If no existing thread is available, a new
-     * thread will be created and added to the pool. Threads that have
-     * not been used for sixty seconds are terminated and removed from
-     * the cache. Thus, a pool that remains idle for long enough will
-     * not consume any resources. Note that pools with similar
-     * properties but different details (for example, timeout parameters)
-     * may be created using {@link ThreadPoolExecutor} constructors.
+     * available. Calls to {@code execute} will reuse previously
+     * constructed threads if available. If no existing thread is
+     * available, a new thread will be created and added to the pool.
      *
      * @return the newly created thread pool
      */
@@ -1502,6 +1697,27 @@ public class Executors {
 ```java
 package java.util.concurrent.locks;
 
+/**
+ * {@code Lock} implementations provide more extensive locking
+ * operations than can be obtained using {@code synchronized} methods
+ * and statements.
+ *
+ * <p>A lock is a tool for controlling access to a shared resource by
+ * multiple threads. Commonly, a lock provides exclusive access to a
+ * shared resource: only one thread at a time can acquire the lock and
+ * all access to the shared resource requires that the lock be
+ * acquired first. However, some locks may allow concurrent access to
+ * a shared resource, such as the read lock of a {@link ReadWriteLock}.
+ *
+ * When locking and unlocking occur in different scopes, care must be
+ * taken to ensure that all code that is executed while the lock is
+ * held is protected by try-finally or try-catch to ensure that the
+ * lock is released when necessary.
+ *
+ * <p>Except where noted, passing a {@code null} value for any
+ * parameter will result in a {@link NullPointerException} being
+ * thrown.
+ */
 public interface Lock {
     /**
      * Acquires the lock.
@@ -1539,6 +1755,36 @@ public interface Lock {
 ```java
 package java.util.concurrent.locks;
 
+/**
+ * A reentrant mutual exclusion {@link Lock} with the same basic
+ * behavior and semantics as the implicit monitor lock accessed using
+ * {@code synchronized} methods and statements, but with extended
+ * capabilities.
+ *
+ * <p>A {@code ReentrantLock} is <em>owned</em> by the thread last
+ * successfully locking, but not yet unlocking it. A thread invoking
+ * {@code lock} will return, successfully acquiring the lock, when
+ * the lock is not owned by another thread.
+ *
+ * <p>It is recommended practice to <em>always</em> immediately
+ * follow a call to {@code lock} with a {@code try} block, most
+ * typically in a before/after construction such as:
+ *
+ * <pre> {@code
+ * class X {
+ *   private final ReentrantLock lock = new ReentrantLock();
+ *   // ...
+ *
+ *   public void m() {
+ *     lock.lock();  // block until condition holds
+ *     try {
+ *       // ... method body
+ *     } finally {
+ *       lock.unlock()
+ *     }
+ *   }
+ * }}</pre>
+ */
 public class ReentrantLock implements Lock, java.io.Serializable {
     /**
      * Creates an instance of {@code ReentrantLock}.
@@ -1561,6 +1807,33 @@ public class ReentrantLock implements Lock, java.io.Serializable {
 ```java
 package java.util.concurrent.locks;
 
+/**
+ * {@code Condition} factors out the {@code Object} monitor
+ * methods ({@link Object#wait() wait}, {@link Object#notify notify}
+ * and {@link Object#notifyAll notifyAll}) into distinct objects to
+ * give the effect of having multiple wait-sets per object, by
+ * combining them with the use of arbitrary {@link Lock} implementations.
+ * Where a {@code Lock} replaces the use of {@code synchronized} methods
+ * and statements, a {@code Condition} replaces the use of the Object
+ * monitor methods.
+ *
+ * <p>Conditions (also known as <em>condition queues</em> or
+ * <em>condition variables</em>) provide a means for one thread to
+ * suspend execution (to &quot;wait&quot;) until notified by another
+ * thread that some state condition may now be true.  Because access
+ * to this shared state information occurs in different threads, it
+ * must be protected, so a lock of some form is associated with the
+ * condition. The key property that waiting for a condition provides
+ * is that it <em>atomically</em> releases the associated lock and
+ * suspends the current thread, just like {@code Object.wait}.
+ *
+ * <p>A {@code Condition} instance is intrinsically bound to a lock.
+ * To obtain a {@code Condition} instance for a particular {@link Lock}
+ * instance use its {@link Lock#newCondition newCondition()} method.
+ *
+ * <p>Except where noted, passing a {@code null} value for any parameter
+ * will result in a {@link NullPointerException} being thrown.
+ */
 public interface Condition {
     /**
      * Causes the current thread to wait until it is signalled or
@@ -1617,5 +1890,609 @@ public interface Condition {
      * return from {@code await}.
      */
     void signalAll();
+}
+```
+
+### `java.lang.FunctionalInterface`
+
+```java
+package java.lang;
+
+/**
+ * An informative annotation type used to indicate that an interface
+ * type declaration is intended to be a <i>functional interface</i> as
+ * defined by the Java Language Specification.
+ *
+ * Conceptually, a functional interface has exactly one abstract
+ * method.  Since {@linkplain java.lang.reflect.Method#isDefault()
+ * default methods} have an implementation, they are not abstract.  If
+ * an interface declares an abstract method overriding one of the
+ * public methods of {@code java.lang.Object}, that also does
+ * <em>not</em> count toward the interface's abstract method count
+ * since any implementation of the interface will have an
+ * implementation from {@code java.lang.Object} or elsewhere.
+ */
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface FunctionalInterface {}
+```
+
+### `java.util.function.Predicate`
+
+```java
+package java.util.function;
+
+/**
+ * Represents a predicate (boolean-valued function) of one argument.
+ *
+ * @param <T> the type of the input to the predicate
+ */
+@FunctionalInterface
+public interface Predicate<T> {
+    /**
+     * Evaluates this predicate on the given argument.
+     *
+     * @param t the input argument
+     * @return {@code true} if the input argument matches the predicate,
+     * otherwise {@code false}
+     */
+    boolean test(T t);
+
+    /**
+     * Returns a composed predicate that represents a short-circuiting logical
+     * AND of this predicate and another.  When evaluating the composed
+     * predicate, if this predicate is {@code false}, then the {@code other}
+     * predicate is not evaluated.
+     *
+     * @param other a predicate that will be logically-ANDed with this
+     *              predicate
+     * @return a composed predicate that represents the short-circuiting logical
+     * AND of this predicate and the {@code other} predicate
+     * @throws NullPointerException if other is null
+     */
+    default Predicate<T> and(Predicate<? super T> other);
+
+    /**
+     * Returns a predicate that represents the logical negation of this
+     * predicate.
+     *
+     * @return a predicate that represents the logical negation of this
+     * predicate
+     */
+    default Predicate<T> negate();
+
+    /**
+     * Returns a composed predicate that represents a short-circuiting logical
+     * OR of this predicate and another.  When evaluating the composed
+     * predicate, if this predicate is {@code true}, then the {@code other}
+     * predicate is not evaluated.
+     *
+     * @param other a predicate that will be logically-ORed with this
+     *              predicate
+     * @return a composed predicate that represents the short-circuiting logical
+     * OR of this predicate and the {@code other} predicate
+     * @throws NullPointerException if other is null
+     */
+    default Predicate<T> or(Predicate<? super T> other);
+
+    /**
+     * Returns a predicate that tests if two arguments are equal according
+     * to {@link Objects#equals(Object, Object)}.
+     *
+     * @param <T> the type of arguments to the predicate
+     * @param targetRef the object reference with which to compare for equality,
+     *               which may be {@code null}
+     * @return a predicate that tests if two arguments are equal according
+     * to {@link Objects#equals(Object, Object)}
+     */
+    static <T> Predicate<T> isEqual(Object targetRef);
+}
+```
+
+### `java.util.function.Function`
+
+```java
+package java.util.function;
+
+/**
+ * Represents a function that accepts one argument and produces a result.
+ *
+ * @param <T> the type of the input to the function
+ * @param <R> the type of the result of the function
+ */
+@FunctionalInterface
+public interface Function<T, R> {
+    /**
+     * Applies this function to the given argument.
+     *
+     * @param t the function argument
+     * @return the function result
+     */
+    R apply(T t);
+
+    /**
+     * Returns a composed function that first applies the {@code before}
+     * function to its input, and then applies this function to the result.
+     * If evaluation of either function throws an exception, it is relayed to
+     * the caller of the composed function.
+     *
+     * @param <V> the type of input to the {@code before} function, and to the
+     *           composed function
+     * @param before the function to apply before this function is applied
+     * @return a composed function that first applies the {@code before}
+     * function and then applies this function
+     * @throws NullPointerException if before is null
+     */
+    default <V> Function<V, R> compose(Function<? super V, ? extends T> before);
+
+    /**
+     * Returns a function that always returns its input argument.
+     *
+     * @param <T> the type of the input and output objects to the function
+     * @return a function that always returns its input argument
+     */
+    static <T> Function<T, T> identity();
+}
+```
+
+### `java.util.function.Consumer`
+
+```java
+package java.util.function;
+
+/**
+ * Represents an operation that accepts a single input argument and returns no
+ * result. Unlike most other functional interfaces, {@code Consumer} is expected
+ * to operate via side-effects.
+ *
+ * @param <T> the type of the input to the operation
+ */
+@FunctionalInterface
+public interface Consumer<T> {
+    /**
+     * Performs this operation on the given argument.
+     *
+     * @param t the input argument
+     */
+    void accept(T t);
+}
+```
+
+### `java.util.function.Supplier`
+
+```java
+package java.util.function;
+
+/**
+ * Represents a supplier of results.
+ *
+ * <p>There is no requirement that a new or distinct result be returned each
+ * time the supplier is invoked.
+ *
+ * @param <T> the type of results supplied by this supplier
+ */
+@FunctionalInterface
+public interface Supplier<T> {
+    /**
+     * Gets a result.
+     *
+     * @return a result
+     */
+    T get();
+}
+```
+
+### `java.util.stream.Stream`
+
+```java
+package java.util.stream;
+
+/**
+ * A sequence of elements supporting sequential and parallel aggregate
+ * operations.
+ *
+ * <p>Streams are lazy; computation on the source data is only performed when the
+ * terminal operation is initiated, and source elements are consumed only
+ * as needed.
+ *
+ * <p>To preserve correct behavior, these <em>behavioral parameters</em>:
+ * <ul>
+ * <li>must be <a href="package-summary.html#NonInterference">non-interfering</a>
+ * (they do not modify the stream source); and</li>
+ * <li>in most cases must be <a href="package-summary.html#Statelessness">stateless</a>
+ * (their result should not depend on any state that might change during execution
+ * of the stream pipeline).</li>
+ * </ul>
+ *
+ * <p>Such parameters are always instances of a
+ * <a href="../function/package-summary.html">functional interface</a> such
+ * as {@link java.util.function.Function}, and are often lambda expressions or
+ * method references.  Unless otherwise specified these parameters must be
+ * <em>non-null</em>.
+ *
+ * <p>A stream should be operated on (invoking an intermediate or terminal stream
+ * operation) only once. A stream implementation may throw {@link IllegalStateException}
+ * if it detects that the stream is being reused.
+ *
+ * <p>Stream pipelines may execute either sequentially or in
+ * <a href="package-summary.html#Parallelism">parallel</a>.
+ *
+ * @param <T> the type of the stream elements
+ */
+public interface Stream<T> extends BaseStream<T, Stream<T>> {
+    /**
+     * Returns a stream consisting of the elements of this stream that match
+     * the given predicate.
+     *
+     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
+     * operation</a>.
+     *
+     * @param predicate a <a href="package-summary.html#NonInterference">non-interfering</a>,
+     *                  <a href="package-summary.html#Statelessness">stateless</a>
+     *                  predicate to apply to each element to determine if it
+     *                  should be included
+     * @return the new stream
+     */
+    Stream<T> filter(Predicate<? super T> predicate);
+
+    /**
+     * Returns a stream consisting of the results of applying the given
+     * function to the elements of this stream.
+     *
+     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
+     * operation</a>.
+     *
+     * @param <R> The element type of the new stream
+     * @param mapper a <a href="package-summary.html#NonInterference">non-interfering</a>,
+     *               <a href="package-summary.html#Statelessness">stateless</a>
+     *               function to apply to each element
+     * @return the new stream
+     */
+    <R> Stream<R> map(Function<? super T, ? extends R> mapper);
+
+    /**
+     * Performs a <a href="package-summary.html#Reduction">reduction</a> on the
+     * elements of this stream, using the provided identity value and an
+     * <a href="package-summary.html#Associativity">associative</a>
+     * accumulation function, and returns the reduced value.  This is equivalent
+     * to:
+     * <pre>{@code
+     *     T result = identity;
+     *     for (T element : this stream)
+     *         result = accumulator.apply(result, element)
+     *     return result;
+     * }</pre>
+     *
+     * but is not constrained to execute sequentially.
+     *
+     * <p>This is a <a href="package-summary.html#StreamOps">terminal
+     * operation</a>.
+     *
+     * @param identity the identity value for the accumulating function
+     * @param accumulator an <a href="package-summary.html#Associativity">associative</a>,
+     *                    <a href="package-summary.html#NonInterference">non-interfering</a>,
+     *                    <a href="package-summary.html#Statelessness">stateless</a>
+     *                    function for combining two values
+     * @return the result of the reduction
+     */
+    T reduce(T identity, BinaryOperator<T> accumulator);
+
+    /**
+     * Returns whether any elements of this stream match the provided
+     * predicate.  May not evaluate the predicate on all elements if not
+     * necessary for determining the result.  If the stream is empty then
+     * {@code false} is returned and the predicate is not evaluated.
+     *
+     * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
+     * terminal operation</a>.
+     *
+     * @param predicate a <a href="package-summary.html#NonInterference">non-interfering</a>,
+     *                  <a href="package-summary.html#Statelessness">stateless</a>
+     *                  predicate to apply to elements of this stream
+     * @return {@code true} if any elements of the stream match the provided
+     * predicate, otherwise {@code false}
+     */
+    boolean anyMatch(Predicate<? super T> predicate);
+
+    /**
+     * Returns whether all elements of this stream match the provided predicate.
+     * May not evaluate the predicate on all elements if not necessary for
+     * determining the result.  If the stream is empty then {@code true} is
+     * returned and the predicate is not evaluated.
+     *
+     * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
+     * terminal operation</a>.
+     *
+     * @param predicate a <a href="package-summary.html#NonInterference">non-interfering</a>,
+     *                  <a href="package-summary.html#Statelessness">stateless</a>
+     *                  predicate to apply to elements of this stream
+     * @return {@code true} if either all elements of the stream match the
+     * provided predicate or the stream is empty, otherwise {@code false}
+     */
+    boolean allMatch(Predicate<? super T> predicate);
+
+    /**
+     * Returns the count of elements in this stream.  This is a special case of
+     * a <a href="package-summary.html#Reduction">reduction</a> and is
+     * equivalent to:
+     * <pre>{@code
+     *     return mapToLong(e -> 1L).sum();
+     * }</pre>
+     *
+     * <p>This is a <a href="package-summary.html#StreamOps">terminal operation</a>.
+     *
+     * @return the count of elements in this stream
+     */
+    long count();
+
+    /**
+     * Returns a sequential ordered stream whose elements are the specified values.
+     *
+     * @param <T> the type of stream elements
+     * @param values the elements of the new stream
+     * @return the new stream
+     */
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public static<T> Stream<T> of(T... values);
+
+    /**
+     * Performs a <a href="package-summary.html#MutableReduction">mutable
+     * reduction</a> operation on the elements of this stream using a
+     * {@code Collector}.  A {@code Collector}
+     * encapsulates the functions used as arguments to
+     * {@link #collect(Supplier, BiConsumer, BiConsumer)}, allowing for reuse of
+     * collection strategies and composition of collect operations such as
+     * multiple-level grouping or partitioning.
+     *
+     * <p>This is a <a href="package-summary.html#StreamOps">terminal
+     * operation</a>.
+
+     * @apiNote
+     * The following will accumulate strings into an ArrayList:
+     * <pre>{@code
+     *     List<String> asList = stringStream.collect(Collectors.toList());
+     * }</pre>
+     *
+     * @param <R> the type of the result
+     * @param <A> the intermediate accumulation type of the {@code Collector}
+     * @param collector the {@code Collector} describing the reduction
+     * @return the result of the reduction
+     */
+    <R, A> R collect(Collector<? super T, A, R> collector);
+
+    /**
+     * Returns an array containing the elements of this stream.
+     *
+     * <p>This is a <a href="package-summary.html#StreamOps">terminal
+     * operation</a>.
+     *
+     * @return an array, whose {@linkplain Class#getComponentType runtime component
+     * type} is {@code Object}, containing the elements of this stream
+     */
+    Object[] toArray();
+}
+```
+
+## Appendix B: JUnit 5.3.2 API Documentation
+
+### `org.junit.jupiter.api.Asserions`
+
+```java
+package org.junit.jupiter.api;
+
+/**
+ * {@code Assertions} is a collection of utility methods that support asserting
+ * conditions in tests.
+ *
+ * <p>Unless otherwise noted, a <em>failed</em> assertion will throw an
+ * {@link org.opentest4j.AssertionFailedError} or a subclass thereof.
+ */
+class Assertions {
+    /**
+	 * <em>Asserts</em> that {@code expected} and {@code actual} are equal.
+	 * <p>If both are {@code null}, they are considered equal.
+	 */
+	public static void assertEquals(Object expected, Object actual)
+    // assertEquals(...) primitive overloads
+
+    /**
+	 * <em>Asserts</em> that the supplied {@code condition} is {@code true}.
+	 */
+	public static void assertTrue(boolean condition);
+
+    /**
+	 * <em>Asserts</em> that the supplied {@code condition} is not {@code true}.
+	 */
+	public static void assertFalse(boolean condition);
+
+    /**
+	 * <em>Asserts</em> that execution of the supplied {@code executable} throws
+	 * an exception of the {@code expectedType} and returns the exception.
+	 *
+	 * <p>If no exception is thrown, or if an exception of a different type is
+	 * thrown, this method will fail.
+	 *
+	 * <p>If you do not want to perform additional checks on the exception instance,
+	 * simply ignore the return value.
+	 */
+	public static <T extends Throwable> T assertThrows(Class<T> expectedType, Executable executable);
+}
+```
+
+### `org.junit.jupiter.api.Test`
+
+```java
+package org.junit.jupiter.api;
+
+/**
+ * {@code @Test} is used to signal that the annotated method is a
+ * <em>test</em> method.
+ *
+ * <p>{@code @Test} methods must not be {@code private} or {@code static}
+ * and must not return a value.
+ */
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@API(status = STABLE, since = "5.0")
+@Testable
+public @interface Test {}
+```
+
+### `org.junit.jupiter.api.BeforeAll`
+
+```java
+package org.junit.jupiter.api;
+
+/**
+ * {@code @BeforeAll} is used to signal that the annotated method should be
+ * executed <em>before</em> <strong>all</strong> tests in the current test class.
+ *
+ * <p>In contrast to {@link BeforeEach @BeforeEach} methods, {@code @BeforeAll}
+ * methods are only executed once for a given test class.
+ *
+ * <h3>Method Signatures</h3>
+ *
+ * {@code @BeforeAll} methods must have a {@code void} return type,
+ * must not be {@code private}, and must be {@code static} by default.
+ * Consequently, {@code @BeforeAll} methods are not
+ * supported in {@link Nested @Nested} test classes or as <em>interface default
+ * methods</em> unless the test class is annotated with
+ * {@link TestInstance @TestInstance(Lifecycle.PER_CLASS)}.
+ */
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface BeforeAll {}
+```
+
+### `org.junit.jupiter.api.BeforeEach`
+
+```java
+package org.junit.jupiter.api;
+
+/**
+ * {@code @BeforeEach} is used to signal that the annotated method should be
+ * executed <em>before</em> <strong>each</strong> {@code @Test},
+ * {@code @RepeatedTest}, {@code @ParameterizedTest}, {@code @TestFactory},
+ * and {@code @TestTemplate} method in the current test class.
+ *
+ * <h3>Method Signatures</h3>
+ *
+ * {@code @BeforeEach} methods must have a {@code void} return type,
+ * must not be {@code private}, and must not be {@code static}.
+ */
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface BeforeEach {}
+```
+
+### `org.junit.jupiter.api.AfterAll`
+
+```java
+package org.junit.jupiter.api;
+
+/**
+ * {@code @AfterAll} is used to signal that the annotated method should be
+ * executed <em>after</em> <strong>all</strong> tests in the current test class.
+ *
+ * <p>In contrast to {@link AfterEach @AfterEach} methods, {@code @AfterAll}
+ * methods are only executed once for a given test class.
+ *
+ * <h3>Method Signatures</h3>
+ *
+ * {@code @AfterAll} methods must have a {@code void} return type,
+ * must not be {@code private}, and must be {@code static} by default.
+ * Consequently, {@code @AfterAll} methods are not
+ * supported in {@link Nested @Nested} test classes or as <em>interface default
+ * methods</em> unless the test class is annotated with
+ * {@link TestInstance @TestInstance(Lifecycle.PER_CLASS)}.
+ */
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface AfterAll {}
+```
+
+### `org.junit.jupiter.api.AfterEach`
+
+```java
+package org.junit.jupiter.api;
+
+/**
+ * {@code @AfterEach} is used to signal that the annotated method should be
+ * executed <em>after</em> <strong>each</strong> {@code @Test},
+ * {@code @RepeatedTest}, {@code @ParameterizedTest}, {@code @TestFactory},
+ * and {@code @TestTemplate} method in the current test class.
+ *
+ * <h3>Method Signatures</h3>
+ *
+ * {@code @AfterEach} methods must have a {@code void} return type,
+ * must not be {@code private}, and must not be {@code static}.
+ */
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface AfterEach {}
+```
+
+### `org.junit.jupiter.api.DisplayName`
+
+```java
+package org.junit.jupiter.api;
+
+/**
+ * {@code @DisplayName} is used to declare a {@linkplain #value custom display
+ * name} for the annotated test class or test method.
+ *
+ * <p>Display names are typically used for test reporting in IDEs and build
+ * tools and may contain spaces, special characters, and even emoji.
+ */
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface DisplayName {
+	/**
+	 * Custom display name for the annotated class or method.
+	 *
+	 * @return a custom display name; never blank or consisting solely of
+	 * whitespace
+	 */
+	String value();
+}
+```
+
+### `org.junit.jupiter.api.Disabled`
+
+```java
+package org.junit.jupiter.api;
+
+/**
+ * {@code @Disabled} is used to signal that the annotated test class or
+ * test method is currently <em>disabled</em> and should not be executed.
+ *
+ * <p>{@code @Disabled} may optionally be declared with a {@linkplain #value
+ * reason} to document why the annotated test class or test method is disabled.
+ *
+ * <p>When applied at the class level, all test methods within that class
+ * are automatically disabled as well.
+ *
+ * <p>When applied at the method level, the presence of this annotation does not
+ * prevent the test class from being instantiated. Rather, it prevents the
+ * execution of the test method and method-level lifecycle callbacks such as
+ * {@code @BeforeEach} methods, {@code @AfterEach} methods, and corresponding
+ * extension APIs.
+ */
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Disabled {
+	/**
+	 * The reason this annotated test class or test method is disabled.
+	 */
+	String value() default "";
 }
 ```
