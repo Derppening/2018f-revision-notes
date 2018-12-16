@@ -406,6 +406,8 @@ keyword before the block
 clause
     - Overriden methods must either throw the same exceptions, subclass(es) of
     the declared exception, or no exceptions
+    - If method does not contain a `throws`clause, overriden methods cannot
+    throw checked exceptions
     - Unchecked exceptions do not matter
 
 ### `try`-`catch`-`finally`
@@ -471,7 +473,7 @@ try (Scanner sc = new Scanner(new File(""));) {
     - `default` method: `abstract` method with a default implementation
     - `static` method
     - `private` method
-- All non-`private` methods must be `public` or `package-access`
+- All non-`private` methods is implicitly `public`
 - All fields are implicitly `public static final`
 - Static methods are allowed, no overriding required
 - Cannot contain instance fields
@@ -741,6 +743,9 @@ void f() {
 ```
 
 - Always implements an interface or extends an superclass
+- Has a default constructor, invoking the superclass constructor
+    - JLS 15.9.5.1: *An anonymous class cannot have an explicitly declared constructor.*
+    - Use Instance Initializer Block for custom initialization
 - Always uses superclass constructor with matching constructors
 - Compiled into `OuterClassName$n.class`
     - `n`: Arbitary number to distinguish anonymous classes
